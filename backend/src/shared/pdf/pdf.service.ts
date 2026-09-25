@@ -168,6 +168,8 @@ export class PdfBuilder {
     const range = this.doc.bufferedPageRange();
     for (let i = range.start; i < range.start + range.count; i++) {
       this.doc.switchToPage(i);
+      // Escrever abaixo da margem faria o pdfkit abrir uma página nova (página em branco no fim).
+      this.doc.page.margins.bottom = 0;
       const bottom = this.doc.page.height - MARGIN + 10;
       this.doc.fillColor(MUTED).font('Helvetica').fontSize(7.5)
         .text(`${footer} · página ${i + 1} de ${range.count}`, MARGIN, bottom, {

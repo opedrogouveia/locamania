@@ -68,6 +68,10 @@ export interface ContractDto extends ContractListItemDto {
   customerPhone: string | null;
   customerWhatsapp: string | null;
   customerEmail: string | null;
+  /** Cliente já tem acesso ao app (senão, oferecer o convite após a entrega). */
+  customerPortalEnabled: boolean;
+  /** Link wa.me para mandar o contrato ao cliente. */
+  whatsappLink: string | null;
   updatedAt: string;
 }
 
