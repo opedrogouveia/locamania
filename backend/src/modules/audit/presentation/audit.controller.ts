@@ -26,7 +26,7 @@ class ListAuditQueryDto extends PaginationQueryDto implements ListAuditQuery {
 }
 
 /** Entidades com linha do tempo na ficha. */
-const TIMELINE_TYPES = ['Customer', 'Motorcycle', 'Contract', 'User'];
+const TIMELINE_TYPES = ['Customer', 'Motorcycle', 'Contract', 'User', 'Occurrence'];
 
 @ApiTags('audit')
 @ApiBearerAuth()
@@ -47,7 +47,7 @@ export class AuditController {
    */
   @Get('timeline/:entityType/:entityId')
   @RequirePermissions(Permission.DASHBOARD_VIEW)
-  @ApiOperation({ summary: 'Linha do tempo de um cliente, moto, contrato ou usuário.' })
+  @ApiOperation({ summary: 'Linha do tempo de um cliente, moto, contrato, usuário ou ocorrência.' })
   timeline(
     @Param('entityType') entityType: string,
     @Param('entityId') entityId: string,

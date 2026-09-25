@@ -5,6 +5,7 @@ import {
   FIELD_LABELS,
   MAINTENANCE_STATUS_LABELS,
   MOTORCYCLE_STATUS_LABELS,
+  OCCURRENCE_STATUS_LABELS,
   type AuditAction,
 } from '@locamania/shared';
 
@@ -20,6 +21,93 @@ const IGNORED_FIELDS = new Set([
   'renderedText',
   'documentHash',
 ]);
+
+/**
+ * Rótulos dos campos que ainda não estão em FIELD_LABELS (shared) — sem isto o
+ * histórico mostrava o nome técnico ("StatusReason", "EndedAt").
+ */
+const EXTRA_FIELD_LABELS: Record<string, string> = {
+  availableSince: 'disponível desde',
+  statusReason: 'motivo da situação',
+  completedAt: 'data de conclusão',
+  startedAt: 'início',
+  scheduledFor: 'data agendada',
+  endedAt: 'data de encerramento',
+  cancelledAt: 'data do cancelamento',
+  cancelReason: 'motivo do cancelamento',
+  deliveredAt: 'data da entrega',
+  sentAt: 'data do envio',
+  signedAt: 'data da assinatura',
+  signatureIp: 'IP da assinatura',
+  signatureMethod: 'forma de assinatura',
+  gatewayPaidAt: 'pagamento confirmado pelo banco em',
+  gatewayExpiresAt: 'validade do PIX',
+  parts: 'peças',
+  workshop: 'oficina',
+  description: 'descrição',
+  title: 'título',
+  type: 'tipo',
+  typeCode: 'tipo de documento',
+  kind: 'tipo de cobrança',
+  categoryCode: 'categoria',
+  supplier: 'fornecedor',
+  date: 'data',
+  occurredAt: 'data da ocorrência',
+  fineNumber: 'nº do auto de infração',
+  fineDueDate: 'vencimento da multa',
+  fineAmount: 'multa',
+  interestAmount: 'juros',
+  discountAmount: 'desconto',
+  expiresAt: 'validade',
+  visibleToCustomer: 'visível no aplicativo',
+  inCollection: 'em cobrança',
+  collectionSince: 'em cobrança desde',
+  privacyAcceptedAt: 'aceite de privacidade',
+  portalLastLoginAt: 'último acesso ao aplicativo',
+  lastLoginAt: 'último acesso',
+  returnedAt: 'data da devolução',
+  finalKm: 'quilometragem final',
+  condition: 'estado da moto',
+  fuelLevel: 'combustível',
+  damages: 'avarias',
+  pendingItems: 'pendências',
+  depositOutcome: 'caução',
+  depositRetainedAmount: 'caução retida',
+  nextMotorcycleStatus: 'situação da moto depois',
+  intervalDays: 'intervalo em dias',
+  intervalKm: 'intervalo em km',
+  defaultIntervalDays: 'intervalo padrão em dias',
+  defaultIntervalKm: 'intervalo padrão em km',
+  lastDoneAt: 'última vez feita em',
+  lastDoneKm: 'última vez feita com',
+  nextDueDate: 'próxima data',
+  nextDueKm: 'próxima quilometragem',
+  periodStart: 'início do período',
+  periodEnd: 'fim do período',
+  source: 'origem',
+  reason: 'motivo',
+  answer: 'resposta',
+  answeredAt: 'data da resposta',
+  subject: 'assunto',
+  body: 'mensagem',
+  audience: 'destinatários',
+  label: 'nome',
+  code: 'código',
+  sortOrder: 'ordem',
+  group: 'grupo',
+  tradeName: 'nome fantasia',
+  legalName: 'razão social',
+  cnpj: 'CNPJ',
+  pixKey: 'chave PIX',
+  supportHours: 'horário de atendimento',
+  fileName: 'arquivo',
+  trackerProvider: 'fornecedor do rastreador',
+  providerResponse: 'resposta do rastreador',
+};
+
+/** Técnicos que não dizem nada a quem lê (ids de ligação, hashes, navegador). */
+const IGNORED_TECH = new Set(['signatureUserAgent', 'gatewayPixCode', 'gatewayProvider', 'dedupeKey', 'correlationId', 'mimeType', 'sizeBytes', 'sequence']);
+const isTechnical = (field: string) => IGNORED_FIELDS.has(field) || IGNORED_TECH.has(field) || /Id$/.test(field);
 
 export interface AuditRow {
   action: AuditAction;
@@ -40,6 +128,7 @@ function statusLabel(entityType: string, status: unknown): string | null {
     Motorcycle: MOTORCYCLE_STATUS_LABELS,
     Contract: CONTRACT_STATUS_LABELS,
     MaintenanceRecord: MAINTENANCE_STATUS_LABELS,
+    Occurrence: OCCURRENCE_STATUS_LABELS,
   };
   return maps[entityType]?.[status] ?? null;
 }
@@ -54,11 +143,12 @@ export function describeAudit(row: AuditRow, entityName: string | null): Describ
   const entity = ENTITY_LABELS[row.entityType] ?? row.entityType;
   const target = entityName ? `${entity} ${entityName}` : entity;
   const changes = (row.changes ?? {}) as { data?: Record<string, unknown>; after?: Record<string, unknown> };
-  const data = changes.data ?? {};
+  // Registros antigos gravados com `data: "[omitido]"` (bug já corrigido) não viram campos letra a letra.
+  const data = changes.data && typeof changes.data === 'object' && !Array.isArray(changes.data) ? changes.data : {};
 
   const changedFields = Object.entries(data)
-    .filter(([field]) => !IGNORED_FIELDS.has(field))
-    .map(([field, to]) => ({ field, label: FIELD_LABELS[field] ?? field, to }));
+    .filter(([field]) => !isTechnical(field))
+    .map(([field, to]) => ({ field, label: FIELD_LABELS[field] ?? EXTRA_FIELD_LABELS[field] ?? field, to }));
 
   let summary: string;
   switch (row.action) {

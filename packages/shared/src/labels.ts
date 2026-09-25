@@ -377,6 +377,7 @@ export const NOTIFICATION_TYPE_META: Record<
   DOCUMENT_EXPIRED: { label: 'Documento vencido', audience: 'STAFF' },
   MOTORCYCLE_IDLE: { label: 'Moto parada', audience: 'STAFF' },
   OCCURRENCE_CREATED: { label: 'Nova ocorrência', audience: 'STAFF' },
+  TRACKER_COMMAND: { label: 'Comando do rastreador', audience: 'STAFF' },
   SUPPORT_MESSAGE: { label: 'Mensagem de cliente', audience: 'STAFF' },
   ODOMETER_REPORTED: { label: 'Quilometragem informada pelo cliente', audience: 'STAFF' },
 };

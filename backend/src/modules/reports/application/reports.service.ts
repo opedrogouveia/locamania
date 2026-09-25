@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   CONTRACT_STATUS_LABELS,
   CUSTOMER_STATUS_LABELS,
+  addDays,
   diffDays,
   formatBRL,
   formatCpf,
@@ -10,6 +11,7 @@ import {
   formatPhone,
   formatPlate,
   formatYmd,
+  instantToYmd,
   MAINTENANCE_DUE_LABELS,
   maxYmd,
   minYmd,
@@ -92,7 +94,7 @@ export class ReportsService {
         ...base,
         subtitle: `Situação da frota em ${formatYmd(this.clock.today())}`,
         summary: [
-          { label: 'Motos', value: String(data.filter((m) => m.status !== 'INACTIVE').length) },
+          { label: 'Total de motos', value: String(data.length) },
           ...[...byStatus.entries()].map(([s, n]) => ({ label: MOTORCYCLE_STATUS_LABELS[s as keyof typeof MOTORCYCLE_STATUS_LABELS], value: String(n) })),
         ],
         sections: [
@@ -253,11 +255,24 @@ export class ReportsService {
     // rentals
     const active = await this.contracts.list({ status: 'ACTIVE', pageSize: 100 }, actor);
     const ended = await this.contracts.list({ status: 'ENDED', pageSize: 100 }, actor);
-    const endedInPeriod = ended.data.filter((c) => c.endDate >= p.from && c.endDate <= p.to);
+    // Contrato encerrado termina na devolução (endedAt), não no término previsto:
+    // quem devolveu antes contaria dias de aluguel que não houve (ocupação > 100%).
+    // Só busca o detalhe de quem pode ter terminado dentro do período (folga de 60 dias para devolução atrasada).
+    const actualEnd = new Map<string, Ymd>();
+    await Promise.all(
+      ended.data
+        .filter((c) => c.startDate <= p.to && c.endDate >= addDays(p.from, -60))
+        .map(async (c) => {
+          const d = await this.contracts.get(c.id, actor);
+          actualEnd.set(c.id, d.endedAt ? instantToYmd(d.endedAt, this.clock.timezone) : c.endDate);
+        }),
+    );
+    const endOf = (c: { id: string; endDate: Ymd }): Ymd => actualEnd.get(c.id) ?? minYmd(c.endDate, addDays(p.from, -1));
+    const endedInPeriod = ended.data.filter((c) => endOf(c) >= p.from && endOf(c) <= p.to);
     const usage = new Map<string, { plate: string; label: string; days: number; contracts: number }>();
     for (const c of [...active.data, ...ended.data]) {
       const start = maxYmd(c.startDate, p.from);
-      const end = minYmd(c.status === 'ACTIVE' ? this.clock.today() : c.endDate, p.to);
+      const end = minYmd(c.status === 'ACTIVE' ? this.clock.today() : endOf(c), p.to);
       if (end < start) continue;
       const u = usage.get(c.motorcycle.id) ?? { plate: c.motorcycle.plate, label: c.motorcycle.label, days: 0, contracts: 0 };
       u.days += diffDays(start, end) + 1;
@@ -289,7 +304,7 @@ export class ReportsService {
         {
           title: 'Contratos encerrados no período',
           columns: [{ key: 'number', label: 'Contrato' }, { key: 'customer', label: 'Cliente' }, { key: 'plate', label: 'Moto' }, { key: 'end', label: 'Término' }, { key: 'status', label: 'Situação' }],
-          rows: endedInPeriod.map((c) => ({ number: c.number, customer: c.customer.label, plate: formatPlate(c.motorcycle.plate), end: formatYmd(c.endDate), status: CONTRACT_STATUS_LABELS[c.status] })),
+          rows: endedInPeriod.map((c) => ({ number: c.number, customer: c.customer.label, plate: formatPlate(c.motorcycle.plate), end: formatYmd(endOf(c)), status: CONTRACT_STATUS_LABELS[c.status] })),
         },
         {
           title: 'Motos mais utilizadas',

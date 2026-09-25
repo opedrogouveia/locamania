@@ -91,26 +91,24 @@ export function extractEntityId(result: unknown, args: unknown): string | undefi
 
 export function buildChanges(operation: string, args: unknown, result: unknown): Record<string, unknown> {
   const a = (args ?? {}) as Record<string, unknown>;
-  let raw: Record<string, unknown>;
+  // Mascara o CONTEÚDO de cada parte, não o envelope: `data` é chave volumosa
+  // (bytes do Document) e, aplicado ao envelope `{ where, data }`, apagava as
+  // mudanças de todo update ("[omitido]") — o histórico perdia o que mudou.
+  const safe = (value: unknown): unknown => maskSecrets(jsonSafe(value));
   switch (operation) {
     case 'create':
     case 'createMany':
     case 'createManyAndReturn':
-      raw = { after: result ?? a.data };
-      break;
+      return { after: safe(result ?? a.data) };
     case 'update':
     case 'updateMany':
-      raw = { where: a.where, data: a.data };
-      break;
+      return { where: safe(a.where), data: safe(a.data) };
     case 'upsert':
-      raw = { where: a.where, create: a.create, update: a.update };
-      break;
+      return { where: safe(a.where), create: safe(a.create), update: safe(a.update) };
     case 'delete':
     case 'deleteMany':
-      raw = { where: a.where };
-      break;
+      return { where: safe(a.where) };
     default:
-      raw = {};
+      return {};
   }
-  return maskSecrets(jsonSafe(raw)) as Record<string, unknown>;
 }

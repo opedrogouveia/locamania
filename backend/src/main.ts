@@ -29,7 +29,8 @@ async function bootstrap(): Promise<void> {
   // IP correto atrás do proxy do Render (rate limit e auditoria).
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
-  app.enableCors({ origin: config.get('corsOrigin', { infer: true }), credentials: true });
+  // Content-Disposition exposto: o download usa o nome de arquivo que a API define.
+  app.enableCors({ origin: config.get('corsOrigin', { infer: true }), credentials: true, exposedHeaders: ['Content-Disposition'] });
 
   app.useGlobalPipes(
     new ValidationPipe({

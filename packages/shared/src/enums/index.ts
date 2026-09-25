@@ -283,6 +283,7 @@ export const NotificationType = {
   OCCURRENCE_CREATED: 'OCCURRENCE_CREATED',
   SUPPORT_MESSAGE: 'SUPPORT_MESSAGE',
   ODOMETER_REPORTED: 'ODOMETER_REPORTED',
+  TRACKER_COMMAND: 'TRACKER_COMMAND',
 } as const;
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
 export const NOTIFICATION_TYPES = values(NotificationType);

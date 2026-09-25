@@ -92,7 +92,7 @@ export class TrackingService {
     });
     await this.notifications.notifyStaff(
       {
-        type: 'OCCURRENCE_CREATED',
+        type: 'TRACKER_COMMAND',
         title: `${TRACKER_COMMAND_LABELS[input.type]} solicitado — ${m.plate}`,
         body: `${actor.name}: ${input.reason.trim()}`,
         severity: input.type === 'BLOCK' ? 'DANGER' : 'INFO',

@@ -78,7 +78,17 @@ export class PrismaAuditQuery implements AuditQuery {
     if (byType.has('Document'))
       tasks.push(db.document.findMany({ where: { id: { in: ids('Document') } }, select: { id: true, title: true } })
         .then((rows) => rows.forEach((r) => names.set(r.id, `"${r.title}"`))));
+    if (byType.has('Occurrence'))
+      tasks.push(db.occurrence.findMany({ where: { id: { in: ids('Occurrence') } }, select: { id: true, motorcycle: { select: { plate: true } }, customer: { select: { name: true } } } })
+        .then((rows) => rows.forEach((r) => names.set(r.id, r.motorcycle ? `da moto ${formatPlate(r.motorcycle.plate)}` : r.customer ? `de ${r.customer.name}` : ''))));
+    if (byType.has('FinancialEntry'))
+      tasks.push(db.financialEntry.findMany({ where: { id: { in: ids('FinancialEntry') } }, select: { id: true, description: true } })
+        .then((rows) => rows.forEach((r) => names.set(r.id, `"${r.description}"`))));
     if (byType.has('AppParameter')) for (const id of ids('AppParameter')) names.set(id, id);
+    if (byType.has('Report')) {
+      const REPORTS: Record<string, string> = { fleet: 'o relatório da frota', customers: 'o relatório de clientes', finance: 'o relatório financeiro', maintenance: 'o relatório de manutenção', rentals: 'o relatório de aluguéis' };
+      for (const id of ids('Report')) if (REPORTS[id]) names.set(id, REPORTS[id]);
+    }
     await Promise.all(tasks);
     return names;
   }

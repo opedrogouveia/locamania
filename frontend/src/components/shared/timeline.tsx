@@ -36,7 +36,8 @@ const ENUM_LABELS: Record<string, string> = {
   PENDING: 'Pendente',
 };
 
-const MONEY_FIELDS = /amount|rent|deposit|price|cost|value|fee|fine|interest|discount/i;
+// Campos de dinheiro pelo nome exato/sufixo ("currentKm" contém "rent" e não é dinheiro).
+const MONEY_FIELDS = /(^amount$|Amount$|Price$|^cost$|Cost$|^value$|^previousRent$|^fine$|^interest$|^discount$)/;
 
 /** Valor de auditoria legível: enum → rótulo, data → dd/mm/aaaa, dinheiro → R$. */
 export function formatAuditValue(field: string, value: unknown): string {
