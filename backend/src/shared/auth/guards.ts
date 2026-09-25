@@ -6,6 +6,7 @@ import type { Request } from 'express';
 
 import { ForbiddenError } from '../errors/domain-errors';
 import {
+  ANY_PERMISSIONS_KEY,
   IS_CUSTOMER_ROUTE_KEY,
   IS_PUBLIC_KEY,
   PERMISSIONS_KEY,
@@ -56,6 +57,10 @@ export class ActorGuard implements CanActivate {
     const required = meta<Permission[]>(this.reflector, PERMISSIONS_KEY, context) ?? [];
     const missing = required.filter((p) => !principal.permissions.has(p));
     if (missing.length > 0) throw new ForbiddenError('Seu perfil não tem permissão para esta ação.', 'MISSING_PERMISSION');
+    const anyOf = meta<Permission[]>(this.reflector, ANY_PERMISSIONS_KEY, context) ?? [];
+    if (anyOf.length > 0 && !anyOf.some((p) => principal.permissions.has(p))) {
+      throw new ForbiddenError('Seu perfil não tem permissão para esta ação.', 'MISSING_PERMISSION');
+    }
     return true;
   }
 }

@@ -8,6 +8,7 @@ import type { CustomerPrincipal, Principal, StaffPrincipal } from './principal';
 export const IS_PUBLIC_KEY = 'auth:isPublic';
 export const IS_CUSTOMER_ROUTE_KEY = 'auth:isCustomerRoute';
 export const PERMISSIONS_KEY = 'auth:permissions';
+export const ANY_PERMISSIONS_KEY = 'auth:anyPermissions';
 export const RATE_LIMIT_KEY = 'auth:rateLimit';
 
 /** Rota pública (login, webhook, health). Ignora a autenticação. */
@@ -22,6 +23,9 @@ export const CustomerRoute = () => SetMetadata(IS_CUSTOMER_ROUTE_KEY, true);
 
 /** Exige TODAS as permissões listadas (rotas da equipe). */
 export const RequirePermissions = (...permissions: Permission[]) => SetMetadata(PERMISSIONS_KEY, permissions);
+
+/** Exige PELO MENOS UMA das permissões (ex.: cadastrar item de catálogo de dentro de um formulário). */
+export const RequireAnyPermission = (...permissions: Permission[]) => SetMetadata(ANY_PERMISSIONS_KEY, permissions);
 
 export interface RateLimitOptions {
   /** Requisições permitidas na janela. */

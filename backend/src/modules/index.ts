@@ -4,4 +4,20 @@
  */
 import type { Type } from '@nestjs/common';
 
-export const FEATURE_MODULES: Type<unknown>[] = [];
+import { CatalogLabelsModule } from '../shared/catalog/catalog-labels.service';
+import { CustomerStatusModule } from './customers/customer-status.module';
+import { CustomersModule } from './customers/customers.module';
+import { MotorcyclesModule } from './motorcycles/motorcycles.module';
+import { SearchModule } from './search/search.module';
+import { SettingsModule } from './settings/settings.module';
+import { UsersModule } from './users/users.module';
+
+export const FEATURE_MODULES: Type<unknown>[] = [
+  CatalogLabelsModule,
+  SettingsModule,
+  UsersModule,
+  CustomerStatusModule,
+  CustomersModule,
+  MotorcyclesModule,
+  SearchModule,
+];
