@@ -1,0 +1,76 @@
+# Blueprint do Render para a API da Locamania.
+#
+# Como usar (ver docs/DEPLOY.md, passo 3): Render → New → Blueprint → este
+# repositório. Variáveis com `sync: false` são pedidas na criação e nunca
+# ficam no repositório (ele é público).
+#
+# O banco NÃO é criado aqui: usamos o Supabase (gratuito). DATABASE_URL e
+# DIRECT_URL vêm de lá.
+services:
+  - type: web
+    name: locamania-api
+    runtime: docker
+    plan: free
+    # São Paulo não existe no plano free; Ohio (us-east) tem a menor latência para o Brasil.
+    region: ohio
+    # Contexto = raiz do monorepo (o Dockerfile usa pnpm-workspace e packages/shared).
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    # Sem preDeployCommand (não existe no free). Migrations são aplicadas à mão
+    # antes do deploy que muda o schema — docs/DEPLOY.md, "Atualizar o banco".
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3201
+      - key: APP_TIMEZONE
+        value: America/Sao_Paulo
+      # Supabase: pooler de transação (6543) para a aplicação…
+      - key: DATABASE_URL
+        sync: false
+      # …e conexão de sessão (5432) para as migrations.
+      - key: DIRECT_URL
+        sync: false
+      # Segredos gerados pelo próprio Render (fortes, nunca no repositório).
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JOBS_SECRET
+        sync: false
+      - key: PAYMENT_WEBHOOK_SECRET
+        generateValue: true
+      - key: JWT_STAFF_EXPIRES_IN
+        value: 12h
+      - key: JWT_CUSTOMER_EXPIRES_IN
+        value: 30d
+      # Endereço do frontend na Vercel, sem barra no fim (CORS e links dos e-mails).
+      - key: CORS_ORIGIN
+        sync: false
+      - key: APP_PUBLIC_URL
+        sync: false
+      - key: JOBS_CRON_ENABLED
+        value: "true"
+      # Integrações: começam em modo de teste. Trocar quando houver contrato
+      # com gateway/rastreador (docs/DEPLOY.md, "Integrações").
+      - key: PAYMENT_GATEWAY
+        value: sandbox
+      - key: TRACKER_PROVIDER
+        value: sandbox
+      - key: WHATSAPP_PROVIDER
+        value: disabled
+      # E-mail (Resend via SMTP). Sem MAIL_HOST a API sobe e só registra no log.
+      - key: MAIL_HOST
+        value: smtp.resend.com
+      - key: MAIL_PORT
+        value: 465
+      - key: MAIL_SECURE
+        value: "true"
+      - key: MAIL_USER
+        value: resend
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: SENTRY_DSN
+        sync: false

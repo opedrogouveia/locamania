@@ -1,0 +1,38 @@
+# Rotinas diárias (atrasos, lembretes de pagamento, manutenção, documentos,
+# contratos terminando, motos paradas).
+#
+# Por que aqui: o plano gratuito do Render hiberna depois de 15 min sem acesso,
+# e o cron interno da API não roda com ela dormindo. Esta chamada acorda a API e
+# executa tudo. As rotinas são idempotentes: rodar duas vezes no dia não
+# duplica aviso nem cobrança.
+#
+# Configuração (uma vez) — Settings → Secrets and variables → Actions:
+#   API_URL      = https://locamania-api.onrender.com   (sem barra no fim)
+#   JOBS_SECRET  = o mesmo valor configurado no Render
+name: Rotinas diárias
+
+on:
+  schedule:
+    # 11:00 UTC = 08:00 em Brasília.
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Acordar a API
+        run: |
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "${{ secrets.API_URL }}/health" || true)
+            echo "tentativa $i: $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 10
+          done
+          echo "A API não respondeu." && exit 1
+      - name: Executar as rotinas
+        run: |
+          curl -fsS --max-time 180 -X POST "${{ secrets.API_URL }}/jobs/run" \
+            -H "x-jobs-secret: ${{ secrets.JOBS_SECRET }}" \
+            -H "Content-Type: application/json" | tee resultado.json

@@ -192,7 +192,24 @@ async function printSummary(w: World, startedAt: number): Promise<void> {
   console.log(`\nTempo total: ${((Date.now() - startedAt) / 1000).toFixed(1)} s`);
 }
 
+/**
+ * A demonstração APAGA todos os dados de negócio antes de gerar os novos. Em
+ * produção só roda com confirmação explícita — a base real da cliente não pode
+ * sumir por um comando digitado no terminal errado.
+ */
+function assertSafeToWipe(): void {
+  const prod = process.env.NODE_ENV === 'production' || /supabase|render\.com|neon\.tech/i.test(process.env.DATABASE_URL ?? '');
+  if (prod && process.env.DEMO_SEED_CONFIRM !== 'apagar-tudo') {
+    console.error(
+      'Recusado: este banco parece ser de produção e a demonstração apaga todos os dados.\n' +
+        'Se é isso mesmo (ambiente de apresentação), rode com DEMO_SEED_CONFIRM=apagar-tudo.',
+    );
+    process.exit(1);
+  }
+}
+
 async function main(): Promise<void> {
+  assertSafeToWipe();
   const startedAt = Date.now();
   await seedReferenceData(prisma);
   const types = await prisma.maintenanceType.findMany({ select: { id: true, code: true } });

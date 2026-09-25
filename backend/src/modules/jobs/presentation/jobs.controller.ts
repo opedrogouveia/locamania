@@ -1,3 +1,5 @@
+import { timingSafeEqual } from 'node:crypto';
+
 import { Controller, Get, Headers, HttpCode, Post } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -24,7 +26,7 @@ export class JobsController {
   @ApiOperation({ summary: 'Roda a rotina diária (exige o cabeçalho x-jobs-secret).' })
   async run(@Headers('x-jobs-secret') secret: string | undefined) {
     const expected = this.config.get('jobs', { infer: true }).secret;
-    if (!expected || secret !== expected) throw new UnauthorizedError('Segredo inválido.');
+    if (!expected || !secret || !safeEqual(secret, expected)) throw new UnauthorizedError('Segredo inválido.');
     return this.jobs.runDaily('scheduler');
   }
 
@@ -43,4 +45,11 @@ export class JobsController {
   runs(): Promise<JobRunDto[]> {
     return this.jobs.recent();
   }
+}
+
+/** Comparação em tempo constante (não vaza o segredo pelo tempo de resposta). */
+function safeEqual(a: string, b: string): boolean {
+  const x = Buffer.from(a);
+  const y = Buffer.from(b);
+  return x.length === y.length && timingSafeEqual(x, y);
 }

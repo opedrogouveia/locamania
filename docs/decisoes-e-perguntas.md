@@ -100,3 +100,43 @@ bloqueio seguro).
 
 ### [PERGUNTA] Identidade visual
 Logo, cores e fonte da Locamania. Hoje a marca é provisória (azul de interface).
+
+### [PERGUNTA] Modelo de contrato
+O texto padrão foi escrito para o MVP (com campos automáticos). A Locamania tem um contrato próprio
+revisado por advogado? Se sim, basta colar em Configurações → Modelo de contrato.
+
+### [PERGUNTA] Documentos obrigatórios do cliente
+Assumido: CNH (categoria A), comprovante de residência e RG/documento com foto. Pedem mais algum
+(ex.: comprovante de trabalho em app de entrega, referência pessoal)?
+
+### [PERGUNTA] Caução
+Assumido: valor por contrato, devolvida (toda ou parte) na devolução. É sempre o mesmo valor? Pode
+ser parcelada?
+
+---
+
+## Noite de 24–25/09/2026 — decisões de implementação
+
+### [DECISÃO] Mensagens de validação da API em pt-BR
+O `ValidationPipe` devolvia as mensagens padrão do class-validator em inglês ("depositOutcome must
+be one of…"), que chegam à tela. Um `exceptionFactory` (`shared/http/validation-messages.ts`)
+traduz por tipo de regra usando `FIELD_LABELS` do shared; validadores do projeto já vêm em
+português e passam direto.
+
+### [DECISÃO] Leitura de cadastros de referência sem permissão específica
+Empresa, parâmetros, catálogos e tipos de manutenção (GET) exigiam `dashboard.view`: um perfil sem
+o painel inicial não conseguiria preencher formulários. Agora qualquer pessoa da equipe lê; alterar
+continua exigindo `settings.manage`.
+
+### [DECISÃO] Produção recusa segredo fraco
+Com `NODE_ENV=production`, a API não sobe se `JWT_SECRET`, `JOBS_SECRET` ou
+`PAYMENT_WEBHOOK_SECRET` forem curtos/de exemplo, ou se `CORS_ORIGIN`/`APP_PUBLIC_URL` apontarem
+para `localhost`. O repositório é público: segredo de exemplo = segredo conhecido.
+
+### [DECISÃO] A demonstração não roda em produção sem confirmação
+`db:seed:demo` apaga todos os dados de negócio. Em banco que parece de produção (Supabase/Render ou
+`NODE_ENV=production`) ela só roda com `DEMO_SEED_CONFIRM=apagar-tudo`.
+
+### [DECISÃO] Busca de cliente pela placa da moto alugada
+"Quem está com a FAN3E58?" é pergunta do dia a dia. A busca de clientes também procura na placa do
+contrato ativo. (Correção junto: CPF digitado na busca estourava o campo numérico do nº do cliente.)

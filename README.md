@@ -52,6 +52,7 @@ pnpm typecheck    # TypeScript nos três workspaces
 pnpm test         # regras (shared) + backend
 pnpm lint
 pnpm build
+node scripts/smoke.mjs            # teste de fumaça da API (só leitura; --write faz um aluguel completo)
 ```
 
 ## Onde ler mais
@@ -65,5 +66,6 @@ pnpm build
 | [`docs/DEPLOY.md`](docs/DEPLOY.md) | Colocar no ar, campo a campo |
 | [`docs/MANUAL_ADMIN.md`](docs/MANUAL_ADMIN.md) | Manual da administradora |
 | [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | Operação, backup, incidentes |
+| [`docs/BACKLOG.md`](docs/BACKLOG.md) | O que ficou para depois do MVP |
 | [`docs/REQUISITOS_CLIENTE.txt`](docs/REQUISITOS_CLIENTE.txt) | O que a cliente pediu |
 | [`CLAUDE.md`](CLAUDE.md) | Regras para agentes de IA (há um por app) |

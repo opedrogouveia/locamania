@@ -90,5 +90,20 @@ export function validateEnv(config: Record<string, unknown>): EnvironmentVariabl
       .join('\n');
     throw new Error(`Variáveis de ambiente inválidas:\n${details}`);
   }
+  if (validated.NODE_ENV === NodeEnv.Production) assertProductionSecrets(validated);
   return validated;
+}
+
+/**
+ * Em produção, segredo de exemplo é o mesmo que nenhum (está no repositório
+ * público). Melhor a API não subir do que subir aceitando token forjado.
+ */
+function assertProductionSecrets(env: EnvironmentVariables): void {
+  const problems: string[] = [];
+  const weak = (v: string | undefined) => !v || v.length < 32 || /troque|changeme|dev-/i.test(v);
+  if (weak(env.JWT_SECRET)) problems.push('JWT_SECRET: use um segredo forte (openssl rand -base64 48).');
+  if (weak(env.JOBS_SECRET)) problems.push('JOBS_SECRET: obrigatório e forte em produção (o GitHub Actions usa para rodar as rotinas).');
+  if (env.PAYMENT_GATEWAY !== 'disabled' && weak(env.PAYMENT_WEBHOOK_SECRET)) problems.push('PAYMENT_WEBHOOK_SECRET: segredo forte do webhook de pagamento.');
+  if (/localhost/.test(env.CORS_ORIGIN) || /localhost/.test(env.APP_PUBLIC_URL)) problems.push('CORS_ORIGIN / APP_PUBLIC_URL: use o endereço público do frontend.');
+  if (problems.length) throw new Error(`Configuração de produção insegura:\n- ${problems.join('\n- ')}`);
 }

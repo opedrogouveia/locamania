@@ -86,8 +86,9 @@ function assertGroup(group: string): CatalogGroup {
 export class SettingsController {
   constructor(private readonly settings: SettingsService) {}
 
+  // Leitura de referência: qualquer pessoa da equipe (formulários dependem disso,
+  // mesmo num perfil sem o painel inicial).
   @Get('company')
-  @RequirePermissions(Permission.DASHBOARD_VIEW)
   company(): Promise<CompanySettingsDto> {
     return this.settings.company();
   }
@@ -112,7 +113,6 @@ export class SettingsController {
   }
 
   @Get('parameters')
-  @RequirePermissions(Permission.DASHBOARD_VIEW)
   parameters(): Promise<ParameterDto[]> {
     return this.settings.parametersList();
   }
@@ -124,7 +124,6 @@ export class SettingsController {
   }
 
   @Get('catalog/:group')
-  @RequirePermissions(Permission.DASHBOARD_VIEW)
   catalog(@Param('group') group: string, @Query('all') all?: string): Promise<CatalogItemDto[]> {
     return this.settings.catalog(assertGroup(group), all === 'true');
   }
@@ -143,7 +142,6 @@ export class SettingsController {
   }
 
   @Get('maintenance-types')
-  @RequirePermissions(Permission.DASHBOARD_VIEW)
   maintenanceTypes(@Query('all') all?: string): Promise<MaintenanceTypeDto[]> {
     return this.settings.maintenanceTypes(all === 'true');
   }
