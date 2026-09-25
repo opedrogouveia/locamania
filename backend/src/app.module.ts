@@ -28,7 +28,15 @@ import { FEATURE_MODULES } from './modules';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, validate: validateEnv, load: [configuration] }),
+    // Lê o .env da raiz (e do backend, se houver) mesmo quando o processo é
+    // iniciado pelo Turborepo, que filtra variáveis não declaradas no turbo.json.
+    // Variável definida no ambiente (Render) tem prioridade sobre o arquivo.
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env', '../.env'],
+      validate: validateEnv,
+      load: [configuration],
+    }),
     ClsModule.forRoot({
       global: true,
       middleware: {

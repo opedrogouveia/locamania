@@ -1,0 +1,34 @@
+{
+  "name": "@locamania/frontend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Frontend Next.js da Locamania — painel administrativo (/admin) e app do cliente (/app).",
+  "scripts": {
+    "dev": "next dev -p 3200",
+    "build": "next build",
+    "start": "next start -p 3200",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@locamania/shared": "workspace:*",
+    "@tanstack/react-query": "^5.101.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.21.0",
+    "next": "^16.2.9",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@next/eslint-plugin-next": "^16.3.2",
+    "@tailwindcss/postcss": "^4.3.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "tailwindcss": "^4.3.1",
+    "typescript": "~5.9.3"
+  }
+}
