@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "locamania (web + api)",
+      "runtimeExecutable": "wsl.exe",
+      "runtimeArgs": [
+        "-d",
+        "ubuntu",
+        "--",
+        "bash",
+        "-lc",
+        "export PATH=\"$HOME/.nvm/versions/node/v24.16.0/bin:$PATH\"; cd ~/projetos/locamania && docker compose up -d && pnpm dev"
+      ],
+      "port": 3200
+    }
+  ]
+}

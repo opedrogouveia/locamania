@@ -289,14 +289,14 @@ Barra inferior no celular (Início, Pagamentos, Moto, Avisos, Mais); barra super
 > e checkbox marcado. Telas conferidas em **390 px (celular) e 1440 px (desktop)**.
 
 ### Etapa 0 — Fundação e harness
-- [ ] 0.1 Git + remoto + `.gitattributes`; requisitos renomeados para `docs/REQUISITOS_CLIENTE.txt`
-- [ ] 0.2 Camada de contexto: `CLAUDE.md` (raiz, backend, **frontend**), `VERSOES.md`, `README.md`, `docs/HANDOFF.md`, `docs/ARQUITETURA.md`, `docs/DESIGN_SYSTEM.md`, `docs/GLOSSARIO.md`, `docs/decisoes-e-perguntas.md`, `docs/BACKLOG.md`, `docs/templates/new-module.md` (fiel ao código), `specs/`
-- [ ] 0.3 Harness: `.claude/settings.json` (permissões de rotina), `.claude/skills/new-module/`, `.claude/launch.json`
-- [ ] 0.4 Monorepo: `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `tsconfig.base.json`, ESLint, Prettier, `.npmrc`, `.gitignore`, `.dockerignore`, `.env.example`, `docker-compose.yml`
-- [ ] 0.5 `packages/shared`: enums, permissões, contratos base, regras puras (4.3) **com testes**, máscaras, datas (fuso), dinheiro
-- [ ] 0.6 Backend: fundação copiada/adaptada do SafeKeep (config, CLS, Prisma + auditoria, erros, auth equipe + cliente, guard de ator, permissões, segurança, health, mail, Sentry, rate limit, PDF), **schema completo** (4.2), migration inicial, seed mínima, Jest
-- [ ] 0.7 Frontend: Next, tokens, primitivos, shells responsivos (painel e cliente), login único, recuperação de senha, primeiro acesso, cliente de API, guardas, PWA (manifest + ícones), aviso offline
-- [ ] 0.8 Verificação: `pnpm typecheck lint test build`; login com cada perfil e com cliente; commit
+- [x] 0.1 Git + remoto + `.gitattributes`; requisitos renomeados para `docs/REQUISITOS_CLIENTE.txt`
+- [x] 0.2 Camada de contexto: `CLAUDE.md` (raiz, backend, **frontend**), `VERSOES.md`, `README.md`, `docs/HANDOFF.md`, `docs/ARQUITETURA.md`, `docs/DESIGN_SYSTEM.md`, `docs/GLOSSARIO.md`, `docs/decisoes-e-perguntas.md`, `docs/BACKLOG.md`, `docs/templates/new-module.md` (fiel ao código), `specs/`
+- [x] 0.3 Harness: `.claude/settings.json` (permissões de rotina), `.claude/skills/new-module/`, `.claude/launch.json`
+- [x] 0.4 Monorepo: `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `tsconfig.base.json`, ESLint, Prettier, `.npmrc`, `.gitignore`, `.dockerignore`, `.env.example`, `docker-compose.yml`
+- [x] 0.5 `packages/shared`: enums, permissões, contratos base, regras puras (4.3) **com testes**, máscaras, datas (fuso), dinheiro
+- [x] 0.6 Backend: fundação copiada/adaptada do SafeKeep (config, CLS, Prisma + auditoria, erros, auth equipe + cliente, guard de ator, permissões, segurança, health, mail, Sentry, rate limit, PDF), **schema completo** (4.2), migration inicial, seed mínima, Jest
+- [x] 0.7 Frontend: Next, tokens, primitivos, shells responsivos (painel e cliente), login único, recuperação de senha, primeiro acesso, cliente de API, guardas, PWA (manifest + ícones), aviso offline
+- [x] 0.8 Verificação: `pnpm typecheck lint test build`; login com cada perfil e com cliente; commit
 
 ### Etapa 1 — Cadastros e configurações
 - [ ] 1.1 Usuários (CRUD, travas do último proprietário) + matriz de permissões editável
