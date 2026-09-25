@@ -1,0 +1,21 @@
+# Normalização de fim de linha: LF no repositório e no working tree.
+# Dev em WSL/Linux, backend em Docker Linux, frontend na Vercel, e o Prettier emite LF.
+# Sem isto, ferramentas do Windows introduzem CRLF e geram diffs enormes sem mudança real.
+* text=auto eol=lf
+
+# Binários: nunca normalizar.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.xlsx  binary
+
+# Lockfile gerado pelo pnpm: não revisar linha a linha.
+pnpm-lock.yaml -diff linguist-generated

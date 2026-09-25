@@ -1,0 +1,30 @@
+{
+  "name": "@locamania/shared",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Contratos de API, enums, permissões e regras puras compartilhadas entre backend e frontend (fonte da verdade).",
+  "license": "UNLICENSED",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "jest",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
+    "typescript": "~5.9.3"
+  }
+}

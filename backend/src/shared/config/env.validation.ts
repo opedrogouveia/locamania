@@ -1,0 +1,94 @@
+import { plainToInstance, Type } from 'class-transformer';
+import { IsEnum, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min, validateSync } from 'class-validator';
+
+export enum NodeEnv {
+  Development = 'development',
+  Production = 'production',
+  Test = 'test',
+}
+
+/**
+ * Schema das variáveis de ambiente, validado no boot (fail-fast): se faltar
+ * algo essencial, a API não sobe — melhor do que subir e falhar no meio de uma
+ * cobrança. Ver `.env.example` para o porquê de cada uma.
+ */
+export class EnvironmentVariables {
+  @IsEnum(NodeEnv)
+  @IsOptional()
+  NODE_ENV: NodeEnv = NodeEnv.Development;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(65535)
+  @IsOptional()
+  PORT = 3201;
+
+  @IsString()
+  @IsOptional()
+  APP_TIMEZONE = 'America/Sao_Paulo';
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_URL!: string;
+
+  @IsString()
+  @IsOptional()
+  DIRECT_URL?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  JWT_SECRET!: string;
+
+  @IsString()
+  @IsOptional()
+  JWT_STAFF_EXPIRES_IN = '12h';
+
+  @IsString()
+  @IsOptional()
+  JWT_CUSTOMER_EXPIRES_IN = '30d';
+
+  @IsString()
+  @IsOptional()
+  CORS_ORIGIN = 'http://localhost:3200';
+
+  @IsString()
+  @IsOptional()
+  APP_PUBLIC_URL = 'http://localhost:3200';
+
+  @IsString()
+  @IsOptional()
+  JOBS_SECRET?: string;
+
+  @IsString()
+  @IsOptional()
+  JOBS_CRON_ENABLED = 'true';
+
+  @IsIn(['sandbox', 'disabled'])
+  @IsOptional()
+  PAYMENT_GATEWAY = 'sandbox';
+
+  @IsString()
+  @IsOptional()
+  PAYMENT_WEBHOOK_SECRET = 'dev-webhook-secret';
+
+  @IsIn(['disabled'])
+  @IsOptional()
+  WHATSAPP_PROVIDER = 'disabled';
+
+  @IsIn(['sandbox', 'disabled'])
+  @IsOptional()
+  TRACKER_PROVIDER = 'sandbox';
+}
+
+export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {
+  const validated = plainToInstance(EnvironmentVariables, config, { enableImplicitConversion: true });
+  const errors = validateSync(validated, { skipMissingProperties: false, whitelist: false });
+  if (errors.length > 0) {
+    const details = errors
+      .map((e) => `- ${e.property}: ${Object.values(e.constraints ?? {}).join(', ')}`)
+      .join('\n');
+    throw new Error(`Variáveis de ambiente inválidas:\n${details}`);
+  }
+  return validated;
+}

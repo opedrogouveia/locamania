@@ -1,0 +1,44 @@
+# Dependências
+node_modules/
+.pnpm-store/
+
+# Builds
+dist/
+build/
+.next/
+out/
+next-env.d.ts
+
+# Turborepo
+.turbo/
+
+# Prisma (client gerado)
+**/generated/
+
+# Testes
+coverage/
+
+# Ambiente / segredos
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# TS
+*.tsbuildinfo
+
+# Backups locais do banco
+backups/
+
+# Material de referência de terceiros (prints, PDFs recebidos) — nunca versionar
+docs/_privado/
+
+# Editores / SO
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

@@ -1,0 +1,919 @@
+// schema.prisma — modelo de domínio da Locamania.
+//
+// Convenções:
+// - ids `cuid()`; `createdAt`/`updatedAt` em tudo; `deletedAt` onde há arquivamento
+//   (nada é apagado fisicamente — a tela diz "Arquivar").
+// - Dinheiro em Decimal(12,2) (trafega como string na API).
+// - Datas "só dia" (vencimento, início/fim, validade) em `@db.Date`; instantes em DateTime.
+// - Categorias com lista finita: enum (muda com deploy) ou CatalogItem (a operação mantém).
+// - AuditLog é append-only e captura toda escrita (extensão do Prisma no backend).
+// - Nomes de tabela/coluna/enum 100% em inglês; comentários em pt-BR.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Conexão direta usada pelas migrations (no Supabase, o session pooler 5432).
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────── Enums ───────────────────────────────
+
+enum StaffRole {
+  OWNER
+  ADMIN
+  FINANCE
+  STAFF
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  OVERDUE
+  CONTRACT_ENDED
+  BLOCKED
+}
+
+enum CustomerManualStatus {
+  INACTIVE
+  BLOCKED
+}
+
+enum CnhCategory {
+  A
+  B
+  AB
+  ACC
+  C
+  D
+  E
+  AC
+  AD
+  AE
+}
+
+enum MotorcycleStatus {
+  AVAILABLE
+  RENTED
+  RESERVED
+  MAINTENANCE
+  BLOCKED
+  INACTIVE
+}
+
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  ENDED
+  CANCELLED
+}
+
+enum SignatureStatus {
+  PENDING
+  SIGNED
+}
+
+enum SignatureMethod {
+  IN_PERSON
+  ELECTRONIC_ACCEPTANCE
+  PROVIDER
+}
+
+enum PaymentPeriodicity {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+}
+
+enum ChargeKind {
+  RENT
+  DEPOSIT
+  FINE
+  DAMAGE
+  OTHER
+}
+
+enum ChargeStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentMethod {
+  PIX
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  BANK_TRANSFER
+  BOLETO
+  OTHER
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum OccurrenceType {
+  TRAFFIC_FINE
+  ACCIDENT
+  DAMAGE
+  THEFT
+  MECHANICAL_ISSUE
+  OTHER
+}
+
+enum OccurrenceStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CANCELLED
+}
+
+enum OdometerSource {
+  CONTRACT_START
+  RETURN
+  MAINTENANCE
+  MANUAL
+  CUSTOMER
+  TRACKER
+}
+
+enum ReturnCondition {
+  GOOD
+  FAIR
+  DAMAGED
+}
+
+enum FuelLevel {
+  EMPTY
+  QUARTER
+  HALF
+  THREE_QUARTERS
+  FULL
+}
+
+enum DepositOutcome {
+  NONE
+  REFUNDED
+  RETAINED
+  PARTIALLY_RETAINED
+}
+
+enum DocumentOwnerType {
+  CUSTOMER
+  MOTORCYCLE
+  CONTRACT
+  MAINTENANCE
+  OCCURRENCE
+  CHARGE
+  RETURN
+  FINANCIAL_ENTRY
+}
+
+enum FinancialEntryType {
+  INCOME
+  EXPENSE
+}
+
+enum NotificationRecipientType {
+  USER
+  CUSTOMER
+}
+
+enum NotificationSeverity {
+  INFO
+  SUCCESS
+  WARNING
+  DANGER
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  WHATSAPP
+}
+
+enum DeliveryStatus {
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum AnnouncementAudience {
+  ALL_ACTIVE
+  SELECTED
+}
+
+enum SupportMessageStatus {
+  OPEN
+  ANSWERED
+  CLOSED
+}
+
+enum TrackerCommandType {
+  BLOCK
+  UNBLOCK
+}
+
+enum TrackerCommandStatus {
+  REQUESTED
+  SENT
+  CONFIRMED
+  FAILED
+  SIMULATED
+}
+
+enum AuthTokenPurpose {
+  PASSWORD_RESET
+  CUSTOMER_INVITE
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  STATUS_CHANGE
+  EXPORT
+  COMMAND
+}
+
+enum ActorType {
+  USER
+  CUSTOMER
+  SYSTEM
+}
+
+enum JobRunStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+// ─────────────────────────────── Equipe ───────────────────────────────
+
+/// Usuário da equipe (painel administrativo). Cliente tem login próprio em Customer.
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         StaffRole @default(STAFF)
+  active       Boolean   @default(true)
+  phone        String?
+  /// Incrementar invalida todos os tokens já emitidos (troca de senha, "encerrar sessões").
+  sessionVersion Int       @default(0)
+  lastLoginAt    DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([role])
+}
+
+/// Matriz de permissões por perfil — editável pelo Proprietário.
+model RolePermission {
+  role        StaffRole @id
+  permissions String[]
+  updatedAt   DateTime  @updatedAt
+}
+
+/// Token de uso único (redefinição de senha e convite de primeiro acesso do cliente).
+/// Guardamos só o hash: o link enviado é a única cópia do token.
+model AuthToken {
+  id         String           @id @default(cuid())
+  tokenHash  String           @unique
+  purpose    AuthTokenPurpose
+  userId     String?
+  customerId String?
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime         @default(now())
+
+  @@index([userId])
+  @@index([customerId])
+}
+
+// ─────────────────────────────── Clientes ───────────────────────────────
+
+model Customer {
+  id     String @id @default(cuid())
+  /// Número curto para falar no balcão ("cliente 142").
+  number Int    @unique @default(autoincrement())
+  name   String
+  /// Só dígitos. Identifica o cliente e é o login do app.
+  cpf    String @unique
+  rg     String?
+  birthDate DateTime? @db.Date
+
+  phone    String?
+  whatsapp String?
+  email    String?
+
+  postalCode   String?
+  street       String?
+  streetNumber String?
+  complement   String?
+  district     String?
+  city         String?
+  /// UF (lista fechada em packages/shared).
+  state        String?
+
+  cnhNumber    String?
+  cnhCategory  CnhCategory?
+  cnhExpiresAt DateTime?    @db.Date
+
+  /// Situação efetiva, recalculada a cada evento (pagamento, contrato, job diário).
+  status         CustomerStatus        @default(ACTIVE)
+  /// Situação definida à mão (Bloqueado/Inativo). Nula = calculada.
+  manualStatus   CustomerManualStatus?
+  blockedReason  String?
+  inCollection   Boolean               @default(false)
+  collectionSince DateTime?            @db.Date
+  notes          String?
+
+  // Acesso ao app do cliente.
+  portalEnabled     Boolean   @default(false)
+  passwordHash      String?
+  sessionVersion    Int       @default(0)
+  portalLastLoginAt DateTime?
+  /// Aceite do aviso de privacidade (LGPD) no primeiro acesso.
+  privacyAcceptedAt DateTime?
+
+  contracts       Contract[]
+  charges         Charge[]
+  occurrences     Occurrence[]
+  supportMessages SupportMessage[]
+  financialEntries FinancialEntry[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([status])
+  @@index([name])
+}
+
+// ─────────────────────────────── Motos ───────────────────────────────
+
+model Motorcycle {
+  id        String @id @default(cuid())
+  /// CatalogItem MOTORCYCLE_BRAND / MOTORCYCLE_MODEL (grava o código, mostra o rótulo).
+  brandCode String
+  modelCode String
+  manufactureYear Int?
+  modelYear       Int?
+  color     String?
+  /// Normalizada: maiúsculas, sem hífen (ABC1234 / ABC1D23).
+  plate     String  @unique
+  renavam   String?
+  chassis   String?
+  /// Última quilometragem conhecida (a maior leitura registrada).
+  currentKm Int     @default(0)
+  acquiredAt    DateTime? @db.Date
+  purchasePrice Decimal?  @db.Decimal(12, 2)
+
+  status       MotorcycleStatus @default(AVAILABLE)
+  statusReason String?
+  /// Desde quando está disponível — base do alerta de "moto parada".
+  availableSince DateTime?
+
+  hasTracker      Boolean @default(false)
+  trackerProvider String?
+  trackerDeviceId String?
+
+  notes String?
+
+  contracts        Contract[]
+  odometerReadings OdometerReading[]
+  maintenancePlans MaintenancePlan[]
+  maintenanceRecords MaintenanceRecord[]
+  occurrences      Occurrence[]
+  charges          Charge[]
+  financialEntries FinancialEntry[]
+  trackerPositions TrackerPosition[]
+  trackerCommands  TrackerCommand[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([status])
+}
+
+/// Histórico de quilometragem — nunca sobrescrito (§6).
+model OdometerReading {
+  id           String         @id @default(cuid())
+  motorcycleId String
+  motorcycle   Motorcycle     @relation(fields: [motorcycleId], references: [id])
+  km           Int
+  readAt       DateTime       @default(now())
+  source       OdometerSource
+  userId       String?
+  customerId   String?
+  contractId   String?
+  notes        String?
+  createdAt    DateTime       @default(now())
+
+  @@index([motorcycleId, readAt])
+}
+
+// ─────────────────────────────── Contratos ───────────────────────────────
+
+model Contract {
+  id     String @id @default(cuid())
+  seq    Int    @unique @default(autoincrement())
+  /// LOC-AAAA-NNNN — o número falado com o cliente.
+  number String @unique
+
+  customerId   String
+  customer     Customer   @relation(fields: [customerId], references: [id])
+  motorcycleId String
+  motorcycle   Motorcycle @relation(fields: [motorcycleId], references: [id])
+
+  status       ContractStatus     @default(DRAFT)
+  startDate    DateTime           @db.Date
+  endDate      DateTime           @db.Date
+  firstDueDate DateTime           @db.Date
+  periodicity  PaymentPeriodicity
+  rentAmount   Decimal            @db.Decimal(12, 2)
+  depositAmount Decimal?          @db.Decimal(12, 2)
+  initialKm    Int?
+  rules        String?
+  notes        String?
+
+  /// Texto do contrato congelado na geração (o modelo pode mudar depois; o assinado não).
+  renderedText String?
+  /// SHA-256 do texto congelado — prova do que foi aceito.
+  documentHash String?
+
+  signatureStatus    SignatureStatus  @default(PENDING)
+  signatureMethod    SignatureMethod?
+  signedAt           DateTime?
+  signatureIp        String?
+  signatureUserAgent String?
+  signedDocumentId   String?
+
+  sentAt      DateTime?
+  deliveredAt DateTime?
+  endedAt     DateTime?
+  cancelledAt DateTime?
+  cancelReason String?
+  createdById String?
+
+  charges          Charge[]
+  occurrences      Occurrence[]
+  returnInspection ReturnInspection?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([status])
+  @@index([customerId])
+  @@index([motorcycleId])
+  @@index([endDate])
+}
+
+/// Vistoria de devolução (§23) — encerra o contrato.
+model ReturnInspection {
+  id         String          @id @default(cuid())
+  contractId String          @unique
+  contract   Contract        @relation(fields: [contractId], references: [id])
+  returnedAt DateTime        @db.Date
+  finalKm    Int
+  condition  ReturnCondition
+  fuelLevel  FuelLevel?
+  damages    String?
+  pendingItems String?
+  nextMotorcycleStatus MotorcycleStatus
+  depositOutcome DepositOutcome @default(NONE)
+  depositRetainedAmount Decimal? @db.Decimal(12, 2)
+  notes      String?
+  createdById String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ─────────────────────────────── Cobranças ───────────────────────────────
+
+model Charge {
+  id     String @id @default(cuid())
+  seq    Int    @unique @default(autoincrement())
+  /// PAG-NNNNNN.
+  number String @unique
+
+  customerId   String
+  customer     Customer    @relation(fields: [customerId], references: [id])
+  contractId   String?
+  contract     Contract?   @relation(fields: [contractId], references: [id])
+  motorcycleId String?
+  motorcycle   Motorcycle? @relation(fields: [motorcycleId], references: [id])
+  occurrenceId String?     @unique
+  occurrence   Occurrence? @relation(fields: [occurrenceId], references: [id])
+
+  kind        ChargeKind
+  /// Nº da parcela no cronograma (aluguel).
+  sequence    Int?
+  description String
+  periodStart DateTime? @db.Date
+  periodEnd   DateTime? @db.Date
+  dueDate     DateTime  @db.Date
+  amount      Decimal   @db.Decimal(12, 2)
+  status      ChargeStatus @default(PENDING)
+
+  paidAt         DateTime?
+  paidAmount     Decimal?       @db.Decimal(12, 2)
+  fineAmount     Decimal?       @db.Decimal(12, 2)
+  interestAmount Decimal?       @db.Decimal(12, 2)
+  discountAmount Decimal?       @db.Decimal(12, 2)
+  method         PaymentMethod?
+  notes          String?
+  receiptDocumentId String?
+  registeredById String?
+  cancelReason   String?
+
+  // Gateway (PIX): a confirmação vem pelo webhook, nunca pelo "paguei" do cliente.
+  gatewayProvider  String?
+  gatewayChargeId  String?   @unique
+  gatewayPixCode   String?
+  gatewayExpiresAt DateTime?
+  gatewayPaidAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId, status])
+  @@index([contractId])
+  @@index([status, dueDate])
+  @@index([dueDate])
+}
+
+/// Evento recebido do gateway — `eventId` único garante idempotência do webhook.
+model GatewayEvent {
+  id             String    @id @default(cuid())
+  provider       String
+  eventId        String    @unique
+  type           String
+  payload        Json
+  signatureValid Boolean
+  chargeId       String?
+  processedAt    DateTime?
+  error          String?
+  receivedAt     DateTime  @default(now())
+}
+
+// ─────────────────────────────── Manutenção ───────────────────────────────
+
+/// Tipo de manutenção (troca de óleo, revisão...) com intervalo padrão.
+model MaintenanceType {
+  id   String @id @default(cuid())
+  code String @unique
+  name String
+  defaultIntervalKm   Int?
+  defaultIntervalDays Int?
+  active    Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  plans   MaintenancePlan[]
+  records MaintenanceRecordType[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Plano de manutenção de uma moto para um tipo (§7): por km, por data ou os dois.
+model MaintenancePlan {
+  id           String          @id @default(cuid())
+  motorcycleId String
+  motorcycle   Motorcycle      @relation(fields: [motorcycleId], references: [id])
+  typeId       String
+  type         MaintenanceType @relation(fields: [typeId], references: [id])
+  intervalKm   Int?
+  intervalDays Int?
+  lastDoneKm   Int?
+  lastDoneAt   DateTime? @db.Date
+  nextDueKm    Int?
+  nextDueDate  DateTime? @db.Date
+  active       Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([motorcycleId, typeId])
+}
+
+model MaintenanceRecord {
+  id           String            @id @default(cuid())
+  motorcycleId String
+  motorcycle   Motorcycle        @relation(fields: [motorcycleId], references: [id])
+  status       MaintenanceStatus @default(SCHEDULED)
+  scheduledFor DateTime?         @db.Date
+  startedAt    DateTime?         @db.Date
+  completedAt  DateTime?         @db.Date
+  km           Int?
+  workshop     String?
+  parts        String?
+  cost         Decimal?          @db.Decimal(12, 2)
+  notes        String?
+  createdById  String?
+
+  types MaintenanceRecordType[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([motorcycleId, status])
+  @@index([status, completedAt])
+}
+
+model MaintenanceRecordType {
+  recordId String
+  record   MaintenanceRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  typeId   String
+  type     MaintenanceType   @relation(fields: [typeId], references: [id])
+
+  @@id([recordId, typeId])
+}
+
+// ─────────────────────────── Ocorrências e multas ───────────────────────────
+
+model Occurrence {
+  id           String           @id @default(cuid())
+  type         OccurrenceType
+  status       OccurrenceStatus @default(OPEN)
+  occurredAt   DateTime         @db.Date
+  motorcycleId String?
+  motorcycle   Motorcycle?      @relation(fields: [motorcycleId], references: [id])
+  customerId   String?
+  customer     Customer?        @relation(fields: [customerId], references: [id])
+  contractId   String?
+  contract     Contract?        @relation(fields: [contractId], references: [id])
+  description  String
+  amount       Decimal?         @db.Decimal(12, 2)
+  /// Auto de infração (multa de trânsito).
+  fineNumber   String?
+  fineDueDate  DateTime?        @db.Date
+  notes        String?
+  createdById  String?
+
+  charge Charge?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([motorcycleId])
+  @@index([customerId])
+  @@index([status])
+}
+
+// ─────────────────────────────── Documentos ───────────────────────────────
+
+/// Arquivo anexado a qualquer ficha. Bytes no banco (o disco do Render é efêmero);
+/// imagens chegam reduzidas pelo navegador.
+model Document {
+  id        String            @id @default(cuid())
+  ownerType DocumentOwnerType
+  ownerId   String
+  /// CatalogItem DOCUMENT_TYPE.
+  typeCode  String
+  title     String
+  fileName  String
+  mimeType  String
+  sizeBytes Int
+  data      Bytes
+  expiresAt DateTime?         @db.Date
+  visibleToCustomer Boolean   @default(false)
+  notes     String?
+  uploadedById         String?
+  uploadedByCustomerId String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([ownerType, ownerId])
+  @@index([expiresAt])
+}
+
+// ─────────────────────────────── Financeiro ───────────────────────────────
+
+/// Lançamento manual (despesas e receitas que não são cobrança de cliente).
+/// Custo de manutenção vem do próprio registro — não duplicar aqui.
+model FinancialEntry {
+  id           String             @id @default(cuid())
+  type         FinancialEntryType
+  /// CatalogItem EXPENSE_CATEGORY / INCOME_CATEGORY.
+  categoryCode String
+  description  String
+  amount       Decimal            @db.Decimal(12, 2)
+  date         DateTime           @db.Date
+  motorcycleId String?
+  motorcycle   Motorcycle?        @relation(fields: [motorcycleId], references: [id])
+  customerId   String?
+  customer     Customer?          @relation(fields: [customerId], references: [id])
+  supplier     String?
+  method       PaymentMethod?
+  createdById  String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([type, date])
+  @@index([motorcycleId])
+}
+
+// ─────────────────────────────── Notificações ───────────────────────────────
+
+/// Uma linha por destinatário (usuário ou cliente) — cada um tem seu "lido".
+/// `recipientId` é o id do User ou do Customer conforme `recipientType`: um campo só,
+/// obrigatório, porque no Postgres NULL não conta para unicidade e a deduplicação
+/// (recipientType, recipientId, dedupeKey) deixaria passar aviso repetido.
+model Notification {
+  id            String                    @id @default(cuid())
+  recipientType NotificationRecipientType
+  recipientId   String
+  type          String
+  title         String
+  body          String
+  severity      NotificationSeverity      @default(INFO)
+  link          String?
+  entityType    String?
+  entityId      String?
+  /// Chave do evento (ex.: charge:<id>:remind:3) — impede aviso repetido.
+  dedupeKey     String?
+  readAt        DateTime?
+  createdAt     DateTime                  @default(now())
+
+  deliveries NotificationDelivery[]
+
+  @@unique([recipientType, recipientId, dedupeKey])
+  @@index([recipientType, recipientId, readAt])
+  @@index([createdAt])
+}
+
+model NotificationDelivery {
+  id             String              @id @default(cuid())
+  notificationId String
+  notification   Notification        @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  channel        NotificationChannel
+  status         DeliveryStatus
+  detail         String?
+  createdAt      DateTime            @default(now())
+
+  @@index([notificationId])
+}
+
+/// Aviso da Locamania para os clientes (§18).
+model Announcement {
+  id              String               @id @default(cuid())
+  title           String
+  body            String
+  audience        AnnouncementAudience
+  recipientsCount Int                  @default(0)
+  createdById     String?
+  createdAt       DateTime             @default(now())
+}
+
+/// Mensagem do cliente pelo app (§17 Suporte).
+model SupportMessage {
+  id           String               @id @default(cuid())
+  customerId   String
+  customer     Customer             @relation(fields: [customerId], references: [id])
+  subject      String
+  body         String
+  status       SupportMessageStatus @default(OPEN)
+  answer       String?
+  answeredById String?
+  answeredAt   DateTime?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([status])
+  @@index([customerId])
+}
+
+// ─────────────────────────────── Rastreamento ───────────────────────────────
+
+model TrackerPosition {
+  id           String     @id @default(cuid())
+  motorcycleId String
+  motorcycle   Motorcycle @relation(fields: [motorcycleId], references: [id])
+  lat          Float
+  lng          Float
+  speedKmh     Float?
+  recordedAt   DateTime
+
+  @@index([motorcycleId, recordedAt])
+}
+
+/// Comando enviado ao rastreador (§32): confirmação, motivo, autor e data.
+model TrackerCommand {
+  id           String               @id @default(cuid())
+  motorcycleId String
+  motorcycle   Motorcycle           @relation(fields: [motorcycleId], references: [id])
+  type         TrackerCommandType
+  status       TrackerCommandStatus @default(REQUESTED)
+  reason       String
+  requestedById String?
+  providerResponse String?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([motorcycleId, createdAt])
+}
+
+// ─────────────────────────────── Configuração ───────────────────────────────
+
+/// Catálogo genérico de listas mantidas pela operação (marca, modelo, tipo de documento,
+/// categoria de despesa...). O registro guarda o `code`; a tela mostra o `label`.
+model CatalogItem {
+  id          String  @id @default(cuid())
+  group       String
+  code        String
+  label       String
+  sortOrder   Int     @default(0)
+  active      Boolean @default(true)
+  /// Criado pelo usuário durante um cadastro — para um admin revisar depois.
+  userCreated Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([group, code])
+  @@index([group, active])
+}
+
+/// Parâmetros de regra editáveis (definidos em packages/shared/src/parameters.ts).
+model AppParameter {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+/// Dados da empresa (linha única, id "company").
+model CompanySettings {
+  id           String  @id @default("company")
+  tradeName    String
+  legalName    String?
+  cnpj         String?
+  phone        String?
+  whatsapp     String?
+  email        String?
+  postalCode   String?
+  street       String?
+  streetNumber String?
+  complement   String?
+  district     String?
+  city         String?
+  state        String?
+  pixKey       String?
+  supportHours String?
+  contractTemplate String
+  updatedAt    DateTime @updatedAt
+}
+
+/// Execução dos jobs agendados — mostra a última rodada e evita duas ao mesmo tempo.
+model JobRun {
+  id         String       @id @default(cuid())
+  name       String
+  trigger    String
+  status     JobRunStatus @default(RUNNING)
+  startedAt  DateTime     @default(now())
+  finishedAt DateTime?
+  summary    Json?
+
+  @@index([name, startedAt])
+}
+
+// ─────────────────────────────── Auditoria ───────────────────────────────
+
+model AuditLog {
+  id            String      @id @default(cuid())
+  occurredAt    DateTime    @default(now())
+  actorType     ActorType   @default(SYSTEM)
+  actorId       String?
+  actorName     String?
+  action        AuditAction
+  entityType    String
+  entityId      String?
+  changes       Json?
+  metadata      Json?
+  correlationId String?
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([occurredAt])
+}

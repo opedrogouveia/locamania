@@ -1,0 +1,1247 @@
+LOCAMANIA — SISTEMA DE LOCAÇÃO DE MOTOS
+
+1. OBJETIVO DO SISTEMA
+
+Criar um sistema completo para uma empresa de aluguel de motos, chamado Locamania.
+
+O sistema deverá funcionar em:
+
+* 💻 Computador — sistema administrativo da Locamania.
+* 📱 Celular — aplicativo exclusivo para os clientes.
+* ☁️ Banco de dados online — compartilhado entre os dois.
+
+O objetivo é centralizar toda a operação da locadora: cadastro de clientes, cadastro das motos, contratos, pagamentos, vencimentos, manutenção, documentos, notificações, situação das motos e acompanhamento dos aluguéis.
+
+O sistema deve ser simples de utilizar, mas completo para a administração.
+
+⸻
+
+2. SISTEMA PARA COMPUTADOR — ADMINISTRATIVO
+
+Este será o sistema principal utilizado pela proprietária/administradora da Locamania.
+
+O administrador deverá conseguir visualizar e controlar praticamente toda a operação pelo computador.
+
+2.1 Tela inicial / Dashboard
+
+Ao entrar no sistema, mostrar um resumo da empresa:
+
+* Total de motos
+* Motos alugadas
+* Motos disponíveis
+* Motos em manutenção
+* Motos bloqueadas/inativas
+* Clientes ativos
+* Clientes inadimplentes
+* Pagamentos que vencem hoje
+* Pagamentos que vencem nos próximos dias
+* Contratos próximos do vencimento
+* Manutenções próximas
+* Documentações próximas do vencimento
+* Alertas importantes
+
+Também deverá existir uma área de notificações/alertas.
+
+Exemplo:
+
+🔴 Pagamento atrasado — Cliente X
+🟡 Pagamento vence amanhã — Cliente Y
+🟡 Troca de óleo da moto ABC-1234 em 300 km
+🟡 IPVA/licenciamento próximo do vencimento
+🔴 Moto ABC-1234 precisa de manutenção
+🟢 Pagamento recebido — Cliente Z
+
+⸻
+
+3. CADASTRO DE CLIENTES
+
+O cadastro deverá ser feito pelo computador.
+
+Campos sugeridos:
+
+Dados pessoais
+
+* Nome completo
+* CPF
+* RG
+* Data de nascimento
+* Telefone
+* WhatsApp
+* E-mail
+* Endereço completo
+* CEP
+* Cidade
+* Estado
+
+Documentos
+
+* CNH
+* Categoria da CNH
+* Validade da CNH
+* Foto/documento da CNH
+* Outros documentos necessários
+
+Informações do aluguel
+
+* Moto alugada
+* Data de início
+* Data prevista para término
+* Valor do aluguel
+* Periodicidade do pagamento
+* Dia do vencimento
+* Caução, se houver
+* Quilometragem inicial
+* Observações
+
+Status do cliente
+
+* Ativo
+* Inativo
+* Em atraso
+* Contrato encerrado
+* Bloqueado
+
+⸻
+
+4. FICHA COMPLETA DO CLIENTE
+
+Ao clicar em um cliente, o administrador deverá conseguir visualizar uma página com todas as informações daquele cliente.
+
+Exemplo:
+
+João da Silva
+
+* CPF
+* Telefone
+* WhatsApp
+* Endereço
+* CNH
+* Moto atual
+* Contrato
+* Valor do aluguel
+* Próximo vencimento
+* Histórico de pagamentos
+* Pagamentos atrasados
+* Histórico de manutenção relacionada à moto
+* Quilometragem registrada
+* Ocorrências
+* Multas, se houver
+* Documentos anexados
+* Histórico completo do aluguel
+
+Também deverá existir um botão para editar os dados.
+
+⸻
+
+5. CADASTRO DAS MOTOS
+
+Cada moto deverá possuir uma ficha própria.
+
+Informações da moto
+
+* Marca
+* Modelo
+* Ano
+* Cor
+* Placa
+* RENAVAM
+* Chassi
+* Quilometragem atual
+* Data de aquisição
+* Valor da moto
+* Situação
+* Rastreador instalado
+* Número/identificação do rastreador, se aplicável
+
+Situação da moto
+
+* 🟢 Disponível
+* 🔵 Alugada
+* 🟡 Reservada
+* 🟠 Em manutenção
+* 🔴 Bloqueada
+* ⚫ Inativa/vendida
+
+⸻
+
+6. HISTÓRICO DA MOTO
+
+Cada moto deverá ter um histórico completo.
+
+Registrar:
+
+* Quem alugou
+* Datas dos aluguéis
+* Quilometragem na saída
+* Quilometragem na devolução
+* Manutenções
+* Trocas de óleo
+* Pneus
+* Freios
+* Bateria
+* Revisões
+* Peças trocadas
+* Acidentes
+* Ocorrências
+* Multas
+* Gastos
+* Abastecimentos, se forem controlados
+* Observações
+
+O histórico não deverá ser apagado simplesmente quando uma informação for alterada.
+
+Deve existir um registro das alterações importantes.
+
+⸻
+
+7. CONTROLE DE MANUTENÇÃO
+
+Esta é uma parte muito importante do sistema.
+
+Para cada moto, cadastrar manutenções programadas.
+
+Exemplos:
+
+* Troca de óleo
+* Revisão
+* Pastilhas de freio
+* Pneus
+* Relação
+* Bateria
+* Filtro
+* Correia, quando aplicável
+* Outros serviços
+
+A manutenção poderá ser controlada por:
+
+Quilometragem
+
+Exemplo:
+
+Troca de óleo a cada 3.000 km.
+
+O sistema deverá avisar quando estiver próximo.
+
+Data
+
+Exemplo:
+
+Revisão prevista para 20/10/2026.
+
+O sistema deverá avisar antecipadamente.
+
+Intervalo
+
+Exemplo:
+
+Manutenção a cada 6 meses.
+
+⸻
+
+8. ALERTAS DE MANUTENÇÃO
+
+O administrador deverá receber alertas como:
+
+🟡 “Moto Honda CG 160 — manutenção prevista em 15 dias.”
+
+🟡 “Moto Honda CG 160 — faltam 300 km para a troca de óleo.”
+
+🔴 “Moto Honda CG 160 — manutenção vencida.”
+
+Também deverá existir uma página:
+
+MANUTENÇÕES
+
+* Próximas
+* Vencidas
+* Realizadas
+* Em andamento
+
+⸻
+
+9. MANUTENÇÃO PARA O CLIENTE
+
+O cliente não deverá visualizar todas as informações internas da moto.
+
+No aplicativo dele, mostrar somente o que for necessário.
+
+Exemplo:
+
+Sua moto
+
+Honda CG 160
+
+Próxima manutenção
+
+“Revisão prevista para 15/10.”
+
+ou
+
+“Faltam aproximadamente 300 km para a próxima manutenção.”
+
+Se for necessário levar a moto para manutenção, o aplicativo poderá mostrar:
+
+“Sua moto precisa passar por manutenção. Entre em contato com a Locamania.”
+
+O cliente não deverá visualizar custos internos, dados de outros clientes ou informações administrativas.
+
+⸻
+
+10. CONTRATO DE LOCAÇÃO
+
+O contrato deverá ser criado pelo computador.
+
+No momento do aluguel, o administrador selecionará:
+
+* Cliente
+* Moto
+* Data de início
+* Data de término
+* Valor
+* Periodicidade
+* Vencimento
+* Caução
+* Quilometragem inicial
+* Regras específicas
+* Observações
+
+O sistema deverá gerar o contrato digital.
+
+Deverá existir opção de:
+
+* Visualizar
+* Baixar
+* Imprimir
+* Enviar ao cliente
+* Registrar assinatura
+
+Se for utilizada assinatura eletrônica, deverá ser utilizada uma solução adequada e juridicamente válida.
+
+⸻
+
+11. PAGAMENTOS
+
+O pagamento deverá ser controlado pelo sistema.
+
+Para cada cliente:
+
+* Valor
+* Vencimento
+* Data de pagamento
+* Status
+* Forma de pagamento
+* Comprovante
+* Juros/multa, quando aplicável
+* Observações
+
+Status
+
+🟢 Pago
+🟡 A vencer
+🟠 Próximo do vencimento
+🔴 Em atraso
+⚫ Cancelado
+
+⸻
+
+12. AVISOS DE PAGAMENTO
+
+O sistema deverá avisar antecipadamente.
+
+Exemplo de configuração:
+
+* 7 dias antes
+* 3 dias antes
+* 1 dia antes
+* No dia do vencimento
+* Após o vencimento
+
+Esses períodos deverão ser configuráveis pelo administrador.
+
+Exemplo:
+
+7 dias antes
+
+“Seu aluguel vence em 7 dias.”
+
+1 dia antes
+
+“Seu pagamento vence amanhã.”
+
+No vencimento
+
+“Seu pagamento vence hoje.”
+
+Após vencimento
+
+“Identificamos que seu pagamento está em atraso.”
+
+⸻
+
+13. PAGAMENTO PELO APLICATIVO
+
+O cliente poderá visualizar:
+
+Próximo pagamento
+
+Valor: R$ XXX
+Vencimento: XX/XX/XXXX
+
+Botão:
+
+PAGAR
+
+O sistema deverá permitir integração com um gateway de pagamento, por exemplo:
+
+* PIX
+* Link de pagamento
+* Cartão, caso seja disponibilizado
+
+O pagamento deverá ser confirmado automaticamente pelo sistema através da integração.
+
+Não considerar o pagamento como confirmado apenas porque o cliente clicou em “paguei”.
+
+⸻
+
+14. CONTROLE DE INADIMPLÊNCIA
+
+O sistema deverá identificar automaticamente pagamentos atrasados.
+
+Exemplo:
+
+Pagamento venceu → sistema identifica atraso → muda status do cliente → envia aviso → aparece alerta no painel administrativo.
+
+O administrador poderá configurar regras para:
+
+* Tolerância
+* Multa
+* Juros
+* Notificações
+* Bloqueio administrativo
+* Encaminhamento para cobrança
+
+Qualquer bloqueio relacionado à moto deverá ser implementado somente de maneira segura e compatível com o equipamento de rastreamento utilizado.
+
+⸻
+
+15. APLICATIVO DO CLIENTE
+
+O aplicativo do cliente deverá ser muito mais simples que o sistema administrativo.
+
+Cada cliente deverá enxergar somente os próprios dados.
+
+Não poderá acessar informações de outros clientes.
+
+⸻
+
+16. TELA INICIAL DO CLIENTE
+
+Exemplo:
+
+Olá, João 👋
+
+Sua moto
+
+Honda CG 160
+Placa ABC-1234
+
+Seu aluguel
+
+R$ XXX por semana
+
+Próximo pagamento
+
+R$ XXX
+Vencimento: XX/XX
+
+[ PAGAR ]
+
+Próxima manutenção
+
+15/10/2026
+
+Situação
+
+🟢 Aluguel em dia
+
+⸻
+
+17. MENU DO CLIENTE
+
+O aplicativo poderá ter:
+
+🏠 Início
+
+Resumo do aluguel.
+
+🏍️ Minha moto
+
+Informações básicas da moto.
+
+💰 Pagamentos
+
+* Próximo pagamento
+* Histórico
+* Comprovantes
+* Status
+
+📄 Meu contrato
+
+Visualizar contrato.
+
+🔧 Manutenção
+
+Próxima manutenção e avisos.
+
+🔔 Notificações
+
+Avisos importantes.
+
+👤 Meu perfil
+
+Dados pessoais básicos.
+
+📞 Suporte
+
+Contato com a Locamania.
+
+⸻
+
+18. NOTIFICAÇÕES
+
+O sistema deverá possuir notificações automáticas.
+
+As notificações deverão funcionar para:
+
+Administrador
+
+* Pagamento próximo
+* Pagamento atrasado
+* Cliente inadimplente
+* Manutenção próxima
+* Manutenção vencida
+* Documento vencendo
+* Contrato vencendo
+* Moto parada
+* Nova ocorrência
+* Pagamento confirmado
+
+Cliente
+
+* Pagamento próximo
+* Pagamento vencendo
+* Pagamento atrasado
+* Pagamento confirmado
+* Manutenção próxima
+* Necessidade de manutenção
+* Avisos da Locamania
+* Alterações relacionadas ao aluguel
+
+⸻
+
+19. WHATSAPP
+
+Se possível, integrar o sistema com WhatsApp Business/API oficial para enviar automaticamente:
+
+* Lembrete de pagamento
+* Aviso de vencimento
+* Aviso de atraso
+* Confirmação de pagamento
+* Aviso de manutenção
+* Avisos importantes
+
+O envio deverá respeitar as regras da plataforma e utilizar uma integração oficial.
+
+⸻
+
+20. DOCUMENTOS DAS MOTOS
+
+Para cada moto, armazenar:
+
+* CRLV
+* Documentos relacionados
+* Comprovantes
+* Notas fiscais
+* Documentos de manutenção
+* Outros documentos
+
+O sistema deverá avisar quando documentos importantes estiverem próximos do vencimento.
+
+⸻
+
+21. CONTROLE DE DOCUMENTOS DO CLIENTE
+
+Também deverá ser possível controlar:
+
+* CNH
+* Validade
+* Documentos entregues
+* Documentos pendentes
+
+Exemplo:
+
+🟡 CNH vence em 30 dias.
+
+🔴 CNH vencida.
+
+⸻
+
+22. MULTAS E OCORRÊNCIAS
+
+Cadastrar ocorrências relacionadas às motos.
+
+Campos:
+
+* Moto
+* Cliente
+* Data
+* Tipo
+* Descrição
+* Valor
+* Documento/comprovante
+* Status
+* Observações
+
+Exemplos:
+
+* Multa
+* Acidente
+* Avaria
+* Furto/roubo
+* Problema mecânico
+* Outros
+
+⸻
+
+23. DEVOLUÇÃO DA MOTO
+
+Quando o aluguel terminar, o administrador deverá registrar:
+
+* Data da devolução
+* Quilometragem final
+* Estado da moto
+* Fotos
+* Avarias
+* Combustível, se aplicável
+* Pendências
+* Multas
+* Valores pendentes
+* Observações
+
+Depois disso, a moto poderá voltar para:
+
+🟢 Disponível
+
+ou
+
+🟠 Manutenção
+
+dependendo da situação.
+
+⸻
+
+24. FOTOS
+
+O sistema deverá permitir anexar fotos.
+
+Exemplos:
+
+* Foto da moto na entrega
+* Foto na devolução
+* Avarias
+* Documentos
+* Manutenção
+* Comprovantes
+
+Registrar data e, quando possível, usuário responsável pelo envio.
+
+⸻
+
+25. CONTROLE FINANCEIRO ADMINISTRATIVO
+
+O administrador deverá ter uma área financeira.
+
+Mostrar:
+
+* Recebimentos
+* Pagamentos pendentes
+* Inadimplência
+* Receita por período
+* Receita por moto
+* Receita por cliente
+* Gastos com manutenção
+* Outros gastos
+* Resultado financeiro
+
+Filtros:
+
+* Hoje
+* Semana
+* Mês
+* Período personalizado
+
+⸻
+
+26. RELATÓRIOS
+
+O sistema deverá gerar relatórios.
+
+Exemplos:
+
+Frota
+
+* Quantidade de motos
+* Situação de cada moto
+
+Clientes
+
+* Clientes ativos
+* Inativos
+* Inadimplentes
+
+Financeiro
+
+* Receitas
+* Despesas
+* Pagamentos atrasados
+
+Manutenção
+
+* Manutenções realizadas
+* Manutenções futuras
+* Gastos
+
+Aluguéis
+
+* Contratos ativos
+* Contratos encerrados
+* Motos mais utilizadas
+
+Os relatórios poderão ser exportados em PDF e Excel.
+
+⸻
+
+27. PESQUISA
+
+O administrador deverá conseguir pesquisar rapidamente:
+
+* Nome do cliente
+* CPF
+* Telefone
+* Placa
+* Modelo
+* Número do contrato
+
+Exemplo:
+
+Pesquisar “ABC-1234”
+
+→ abrir imediatamente a ficha da moto.
+
+Pesquisar “João”
+
+→ mostrar o cliente e o aluguel relacionado.
+
+⸻
+
+28. USUÁRIOS ADMINISTRATIVOS
+
+O sistema deverá permitir diferentes níveis de acesso.
+
+Exemplo:
+
+Proprietário
+
+Acesso total.
+
+Administrador
+
+Acesso à maioria das funções.
+
+Financeiro
+
+Acesso aos pagamentos e financeiro.
+
+Funcionário
+
+Acesso limitado.
+
+Cada usuário deverá ter login e senha próprios.
+
+⸻
+
+29. SEGURANÇA
+
+Como o sistema armazenará dados pessoais, documentos e informações financeiras, deverá possuir:
+
+* Login seguro
+* Senhas protegidas
+* Controle de acesso
+* Criptografia quando aplicável
+* Backup automático
+* Registro de atividades
+* Controle de sessão
+* Recuperação de senha
+* Proteção contra acesso indevido
+
+O projeto deverá considerar a LGPD.
+
+⸻
+
+30. HISTÓRICO DE ALTERAÇÕES
+
+Registrar ações importantes.
+
+Exemplo:
+
+“Usuário administrador alterou o valor do aluguel.”
+
+“Usuário X registrou pagamento.”
+
+“Usuário X alterou a quilometragem.”
+
+“Contrato foi encerrado.”
+
+Isso servirá para auditoria.
+
+⸻
+
+31. RASTREAMENTO DAS MOTOS
+
+O sistema deverá ser preparado para integração com rastreadores.
+
+Dependendo do fornecedor escolhido, poderá mostrar:
+
+* Localização
+* Status do dispositivo
+* Última comunicação
+* Quilometragem, se disponibilizada
+* Histórico de localização, conforme necessidade e legislação
+
+A integração deverá ser feita através da API do fornecedor do rastreador.
+
+O sistema não deverá assumir que qualquer rastreador possui as mesmas funções.
+
+⸻
+
+32. BLOQUEIO DA MOTO
+
+Caso seja utilizado rastreador com função de bloqueio, o sistema poderá possuir uma área administrativa para essa função.
+
+Porém, o bloqueio deverá possuir:
+
+* Confirmação antes da execução
+* Registro de quem realizou
+* Motivo
+* Data/hora
+* Integração com o dispositivo
+* Regras de segurança
+
+Não implementar desligamento abrupto de uma moto em movimento.
+
+O sistema deverá seguir as funcionalidades e limitações do equipamento instalado.
+
+⸻
+
+33. BANCO DE DADOS
+
+Todos os dados deverão ficar centralizados em um banco de dados online.
+
+Entidades principais:
+
+* Clientes
+* Motos
+* Contratos
+* Pagamentos
+* Manutenções
+* Usuários
+* Documentos
+* Ocorrências
+* Multas
+* Notificações
+* Histórico
+* Despesas
+* Receitas
+* Rastreamento
+
+O aplicativo do cliente e o sistema administrativo deverão acessar o mesmo banco através de uma API segura.
+
+⸻
+
+34. SINCRONIZAÇÃO
+
+Tudo deverá atualizar automaticamente.
+
+Exemplo:
+
+Administrador registra:
+
+“Pagamento recebido.”
+
+→ sistema atualiza o banco
+→ aplicativo do cliente mostra “Pago”
+→ notificação pode ser enviada ao cliente.
+
+Outro exemplo:
+
+Administrador agenda manutenção.
+
+→ cliente recebe aviso quando chegar o período configurado.
+
+⸻
+
+35. FUNCIONAMENTO OFFLINE
+
+O sistema deverá avaliar possibilidade de funcionamento offline para algumas funções do computador e celular.
+
+Caso não seja possível realizar uma operação offline, o sistema deverá informar claramente:
+
+“Sem conexão com a internet.”
+
+Nenhuma informação financeira ou alteração crítica deverá ser considerada concluída sem confirmação adequada do servidor.
+
+⸻
+
+36. BACKUP
+
+O banco de dados deverá possuir:
+
+* Backup automático
+* Recuperação em caso de falha
+* Proteção contra perda de dados
+
+O administrador não deverá depender de um único computador para armazenar os dados.
+
+⸻
+
+37. DESIGN
+
+A identidade visual deverá ser baseada na marca Locamania.
+
+O sistema deverá ter aparência:
+
+* Moderna
+* Profissional
+* Limpa
+* Fácil de entender
+* Responsiva
+
+O sistema administrativo poderá utilizar uma interface mais completa, com menus laterais, tabelas, gráficos e filtros.
+
+O aplicativo do cliente deverá ser mais simples e visual.
+
+⸻
+
+38. DIFERENÇA ENTRE OS DOIS SISTEMAS
+
+💻 ADMINISTRATIVO
+
+O administrador vê:
+
+* Todos os clientes
+* Todas as motos
+* Todos os contratos
+* Todos os pagamentos
+* Financeiro
+* Manutenção
+* Documentos
+* Ocorrências
+* Relatórios
+* Rastreamento
+* Configurações
+* Notificações
+* Histórico
+
+📱 CLIENTE
+
+O cliente vê somente:
+
+* Seus dados
+* Sua moto
+* Seu contrato
+* Seu pagamento
+* Histórico de pagamentos
+* Próxima manutenção
+* Notificações
+* Documentos que forem necessários
+* Suporte
+
+⸻
+
+39. FLUXO COMPLETO DE UM NOVO ALUGUEL
+
+ETAPA 1
+
+Cliente chega para alugar uma moto.
+
+ETAPA 2
+
+Administrador abre o sistema no computador.
+
+ETAPA 3
+
+Cadastra o cliente.
+
+ETAPA 4
+
+Anexa documentos necessários.
+
+ETAPA 5
+
+Seleciona a moto disponível.
+
+ETAPA 6
+
+Define:
+
+* Valor
+* Periodicidade
+* Vencimento
+* Data de início
+* Data de término
+* Caução
+* Regras
+
+ETAPA 7
+
+Sistema gera o contrato.
+
+ETAPA 8
+
+Contrato é assinado.
+
+ETAPA 9
+
+Sistema registra a quilometragem inicial.
+
+ETAPA 10
+
+Moto passa para:
+
+ALUGADA
+
+ETAPA 11
+
+Cliente recebe acesso ao aplicativo.
+
+ETAPA 12
+
+Cliente passa a visualizar seu aluguel.
+
+ETAPA 13
+
+Sistema começa automaticamente os lembretes de pagamento.
+
+ETAPA 14
+
+Sistema também acompanha as manutenções.
+
+⸻
+
+40. FLUXO DE PAGAMENTO
+
+Exemplo:
+
+Pagamento semanal:
+
+Segunda-feira
+
+Sistema identifica que o pagamento vence sexta-feira.
+
+→ envia lembrete.
+
+Quinta-feira
+
+→ novo lembrete.
+
+Sexta-feira
+
+→ pagamento vence.
+
+Pagamento confirmado
+
+→ status muda para PAGO.
+
+Pagamento não realizado
+
+→ status muda para ATRASADO.
+
+→ administrador recebe alerta.
+
+→ cliente recebe aviso.
+
+As regras seguintes deverão ser configuráveis.
+
+⸻
+
+41. FLUXO DE MANUTENÇÃO
+
+Exemplo:
+
+Moto está com:
+
+12.700 km.
+
+Próxima troca de óleo:
+
+15.000 km.
+
+Sistema calcula:
+
+2.300 km restantes.
+
+Quando atingir o limite configurado:
+
+🟡 ALERTA DE MANUTENÇÃO.
+
+Depois:
+
+🔴 MANUTENÇÃO VENCIDA.
+
+O administrador recebe o alerta.
+
+O cliente responsável pela moto também recebe o aviso necessário.
+
+Após realizar a manutenção:
+
+Administrador registra:
+
+* Data
+* Quilometragem
+* Serviço
+* Peças
+* Valor
+* Oficina
+* Nota/comprovante
+
+Sistema cria um novo intervalo de manutenção.
+
+⸻
+
+42. CONFIGURAÇÕES ADMINISTRATIVAS
+
+O administrador deverá conseguir configurar:
+
+* Dias de aviso de pagamento
+* Dias de aviso de manutenção
+* Regras de vencimento
+* Valores
+* Tipos de manutenção
+* Categorias
+* Usuários
+* Permissões
+* Notificações
+* Dados da empresa
+* Formas de pagamento
+* Integrações
+
+⸻
+
+43. INTEGRAÇÕES FUTURAS
+
+O sistema deverá ser desenvolvido de maneira que permita futuras integrações com:
+
+* Gateway de pagamento
+* PIX
+* WhatsApp
+* E-mail
+* SMS
+* Rastreador
+* Assinatura eletrônica
+* Google Maps/mapas
+* Contabilidade
+* Emissão de documentos
+
+⸻
+
+44. TECNOLOGIA
+
+O desenvolvedor poderá escolher a tecnologia mais adequada, desde que cumpra os requisitos.
+
+É importante que:
+
+* O sistema administrativo funcione muito bem em computador.
+* O aplicativo funcione em Android e iPhone.
+* Os dados sejam centralizados.
+* A API seja segura.
+* O sistema seja escalável.
+* O banco tenha backup.
+* O aplicativo possa receber atualizações sem perder dados.
+
+Preferencialmente, desenvolver o aplicativo mobile de maneira que seja possível manter uma única base de código para Android e iOS, reduzindo custos de manutenção.
+
+⸻
+
+45. PRIORIDADE DO PROJETO
+
+PRIORIDADE 1 — ESSENCIAL
+
+* Cadastro de clientes
+* Cadastro de motos
+* Contratos
+* Pagamentos
+* Controle de vencimentos
+* Notificações
+* Manutenção
+* Aplicativo do cliente
+* Dashboard administrativo
+* Banco de dados
+* Login e segurança
+
+PRIORIDADE 2
+
+* WhatsApp
+* PIX automático
+* Relatórios
+* Documentos
+* Fotos
+* Ocorrências
+* Multas
+* Assinatura digital
+
+PRIORIDADE 3
+
+* Rastreamento
+* Integração com rastreador
+* Recursos avançados de frota
+* Automação financeira
+* Integrações adicionais
+
+⸻
+
+46. REGRA PRINCIPAL DE PRIVACIDADE
+
+O cliente NUNCA deverá conseguir acessar informações de outros clientes.
+
+O sistema deverá utilizar autenticação e autorização para garantir que cada cliente tenha acesso somente aos seus próprios dados.
+
+O administrador terá acesso conforme seu nível de permissão.
+
+⸻
+
+47. OBJETIVO FINAL
+
+Quero que o sistema permita administrar a Locamania praticamente inteira pelo computador.
+
+Ao colocar uma moto para aluguel, quero conseguir:
+
+1. Cadastrar o cliente.
+2. Cadastrar/selecionar a moto.
+3. Criar o contrato.
+4. Definir o valor e vencimento.
+5. Registrar o pagamento/cobrança.
+6. Entregar a moto.
+7. Acompanhar os pagamentos.
+8. Receber alertas de atraso.
+9. Acompanhar manutenção.
+10. Receber alertas de manutenção.
+11. Acompanhar documentos.
+12. Controlar a situação de cada moto.
+13. Consultar todo o histórico.
+14. Encerrar o aluguel quando necessário.
+
+Enquanto isso, o cliente deverá ter no celular somente aquilo que precisa para acompanhar seu próprio aluguel:
+
+Minha moto + meu contrato + meus pagamentos + minhas manutenções + meus avisos + meu suporte.
+
+O objetivo é que a Locamania tenha um sistema centralizado, profissional e automatizado, evitando depender de planilhas, papéis ou controles separados.

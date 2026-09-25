@@ -1,0 +1,65 @@
+# docker-compose — desenvolvimento local da Locamania.
+#
+# Sobe o Postgres e o Mailpit. A API e o frontend rodam nativos (`pnpm dev`).
+# O serviço `api` existe para testar a imagem de produção localmente:
+#   docker compose --profile api up -d --build
+#
+# Portas diferentes das do SafeKeep de propósito: os dois projetos convivem na
+# mesma máquina (Postgres 5433, Mailpit 1026/8026, API 3201).
+
+services:
+  postgres:
+    image: postgres:17-bookworm
+    container_name: locamania-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: locamania
+      POSTGRES_PASSWORD: locamania
+      POSTGRES_DB: locamania
+    ports:
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U locamania -d locamania']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # SMTP de desenvolvimento: captura os e-mails em vez de enviar.
+  # Caixa de entrada web em http://localhost:8026
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: locamania-mailpit
+    restart: unless-stopped
+    ports:
+      - '1026:1025'
+      - '8026:8025'
+    environment:
+      MP_MAX_MESSAGES: 1000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+  api:
+    profiles: ['api']
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: locamania-api
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3201
+      DATABASE_URL: postgresql://locamania:locamania@postgres:5432/locamania?schema=public
+      DIRECT_URL: postgresql://locamania:locamania@postgres:5432/locamania?schema=public
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+    ports:
+      - '3201:3201'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
