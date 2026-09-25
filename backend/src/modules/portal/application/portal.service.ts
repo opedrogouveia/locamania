@@ -338,8 +338,10 @@ export class PortalService {
     };
   }
 
-  supportMessages(me: CustomerPrincipal): Promise<PaginatedResponse<SupportMessageDto>> {
-    return this.communication.support({ customerId: me.id, pageSize: 50 });
+  async supportMessages(me: CustomerPrincipal): Promise<PaginatedResponse<SupportMessageDto>> {
+    const page = await this.communication.support({ customerId: me.id, pageSize: 50 });
+    // §46: quem da equipe respondeu é informação interna — para o cliente, "Locamania".
+    return { ...page, data: page.data.map((m) => ({ ...m, answeredBy: m.answer ? 'Locamania' : null })) };
   }
 
   sendSupport(me: CustomerPrincipal, input: CreateSupportMessageRequest): Promise<SupportMessageDto> {

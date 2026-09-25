@@ -44,7 +44,8 @@ class ChangePasswordDto implements ChangePasswordRequest {
   @ApiProperty() @IsString() @IsNotEmpty({ message: 'Informe a nova senha.' }) @MaxLength(200) newPassword!: string;
 }
 
-const LOGIN_LIMIT = { bucket: 'login', max: 10, windowMs: 15 * 60_000 };
+// Em desenvolvimento, testes automatizados (vários agentes/prints no mesmo IP) estouravam o limite.
+const LOGIN_LIMIT = { bucket: 'login', max: process.env.NODE_ENV === 'development' ? 300 : 10, windowMs: 15 * 60_000 };
 const RECOVERY_LIMIT = { bucket: 'recovery', max: 5, windowMs: 15 * 60_000 };
 
 @ApiTags('auth')

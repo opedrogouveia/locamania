@@ -117,7 +117,9 @@ export class NotificationsService {
       severity: query.severity,
     });
     const phones = recipientType === 'USER' ? await this.customerPhones(items) : new Map<string, string | null>();
-    return paginated(items.map((n) => this.toDto(n, phones)), total, p);
+    const dtos = items.map((n) => this.toDto(n, phones));
+    // §46: o cliente não vê como/para onde a equipe enviou (canais, falhas, detalhes técnicos).
+    return paginated(recipientType === 'CUSTOMER' ? dtos.map((d) => ({ ...d, deliveries: [] })) : dtos, total, p);
   }
 
   async unread(recipientType: NotificationRecipientType, recipientId: string): Promise<UnreadCountDto> {
