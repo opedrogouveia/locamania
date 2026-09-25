@@ -74,6 +74,7 @@ export class PrismaCustomersRepository implements CustomersRepository {
 
   async list(params: ListCustomersParams): Promise<{ items: CustomerRecord[]; total: number }> {
     const digits = params.search ? onlyDigits(params.search) : '';
+    const plate = params.search ? params.search.toUpperCase().replace(/[^A-Z0-9]/g, '') : '';
     const where: Prisma.CustomerWhereInput = {
       deletedAt: null,
       ...(params.status ? { status: params.status } : {}),
@@ -86,7 +87,12 @@ export class PrismaCustomersRepository implements CustomersRepository {
               ...(digits.length >= 3
                 ? [{ cpf: { contains: digits } }, { phone: { contains: digits } }, { whatsapp: { contains: digits } }]
                 : []),
-              ...(/^\d+$/.test(params.search.trim()) ? [{ number: Number(params.search.trim()) }] : []),
+              // Nº do cliente: só se couber num int4 (CPF digitado não pode estourar a query).
+              ...(/^\d{1,7}$/.test(params.search.trim()) ? [{ number: Number(params.search.trim()) }] : []),
+              // Placa da moto do aluguel ativo ("qual cliente está com a ABC1D23?").
+              ...(plate.length >= 3
+                ? [{ contracts: { some: { status: 'ACTIVE' as const, deletedAt: null, motorcycle: { plate: { contains: plate } } } } }]
+                : []),
             ],
           }
         : {}),

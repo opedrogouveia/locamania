@@ -62,7 +62,9 @@
   --sidebar-border: oklch(0.92 0.005 257);
   --sidebar-ring: oklch(0.55 0.2 260);
 
-  /* Gráficos / status */
+  /* Gráficos (validados no modo claro; ordem de uso: 1 alugada, 2 disponível,
+     5 reservada, 3 manutenção, 4 bloqueada). Âmbar < 3:1 no branco → sempre
+     com rótulo visível ao lado. */
   --chart-1: oklch(0.55 0.2 260);
   --chart-2: oklch(0.62 0.15 150);
   --chart-3: oklch(0.76 0.15 75);
@@ -112,11 +114,13 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.66 0.17 262);
 
-  --chart-1: oklch(0.66 0.17 262);
-  --chart-2: oklch(0.66 0.14 150);
-  --chart-3: oklch(0.79 0.14 80);
-  --chart-4: oklch(0.62 0.2 25);
-  --chart-5: oklch(0.66 0.13 235);
+  /* Validados (dataviz validate_palette, modo escuro, na superfície do card):
+     banda de luminosidade 0.48–0.67 e separação para daltonismo ≥ 8. */
+  --chart-1: oklch(0.64 0.17 262);
+  --chart-2: oklch(0.65 0.14 150);
+  --chart-3: oklch(0.665 0.14 85);
+  --chart-4: oklch(0.58 0.21 22);
+  --chart-5: oklch(0.6 0.12 225);
 }
 
 /* Mapeia os tokens para utilitários do Tailwind (bg-background, text-foreground, etc.) */
