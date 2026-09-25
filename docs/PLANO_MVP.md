@@ -363,8 +363,8 @@ Barra inferior no celular (Início, Pagamentos, Moto, Avisos, Mais); barra super
 - [x] 12.4 `docs/MANUAL_ADMIN.md`, `docs/RUNBOOK.md` (operação, backup/restauração, incidentes)
 
 ### Etapa 13 — Entrega
-- [ ] 13.1 Stack rodando na máquina do Pedro com os dados de demonstração
-- [ ] 13.2 `HANDOFF.md` final, perguntas para a cliente, resumo da noite
+- [x] 13.1 Stack rodando na máquina do Pedro com os dados de demonstração
+- [x] 13.2 `HANDOFF.md` final, perguntas para a cliente, resumo da noite
 
 ---
 
