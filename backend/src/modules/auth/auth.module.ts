@@ -16,6 +16,6 @@ import { AuthController } from './presentation/auth.controller';
     { provide: AUTH_ACCOUNTS, useClass: PrismaAuthAccounts },
     { provide: AUTH_TOKENS, useClass: PrismaAuthTokens },
   ],
-  exports: [AuthTokensService],
+  exports: [AuthTokensService, AUTH_ACCOUNTS],
 })
 export class AuthModule {}
