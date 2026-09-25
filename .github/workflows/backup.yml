@@ -17,19 +17,30 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL_BACKUP }}
     steps:
+      - name: Conferir configuração
+        id: cfg
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::notice::DATABASE_URL_BACKUP ainda não configurado (docs/DEPLOY.md, passo 4) — nada a fazer."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        if: steps.cfg.outputs.skip != 'true'
       - name: Instalar o cliente do PostgreSQL 17
+        if: steps.cfg.outputs.skip != 'true'
         run: |
           sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
           sudo apt-get update
           sudo apt-get install -y postgresql-client-17
       - name: Gerar o dump
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL_BACKUP }}
+        if: steps.cfg.outputs.skip != 'true'
         run: ./scripts/backup-db.sh ./backups
       - name: Guardar como artefato
+        if: steps.cfg.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: locamania-backup-${{ github.run_id }}

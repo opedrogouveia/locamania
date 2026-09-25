@@ -21,18 +21,30 @@ jobs:
   run:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      API_URL: ${{ secrets.API_URL }}
+      JOBS_SECRET: ${{ secrets.JOBS_SECRET }}
     steps:
+      - name: Conferir configuração
+        id: cfg
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$JOBS_SECRET" ]; then
+            echo "::notice::API_URL/JOBS_SECRET ainda não configurados (docs/DEPLOY.md, passo 4) — nada a fazer."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Acordar a API
+        if: steps.cfg.outputs.skip != 'true'
         run: |
           for i in $(seq 1 12); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "${{ secrets.API_URL }}/health" || true)
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$API_URL/health" || true)
             echo "tentativa $i: $code"
             [ "$code" = "200" ] && exit 0
             sleep 10
           done
           echo "A API não respondeu." && exit 1
       - name: Executar as rotinas
+        if: steps.cfg.outputs.skip != 'true'
         run: |
-          curl -fsS --max-time 180 -X POST "${{ secrets.API_URL }}/jobs/run" \
-            -H "x-jobs-secret: ${{ secrets.JOBS_SECRET }}" \
+          curl -fsS --max-time 180 -X POST "$API_URL/jobs/run" \
+            -H "x-jobs-secret: $JOBS_SECRET" \
             -H "Content-Type: application/json" | tee resultado.json
