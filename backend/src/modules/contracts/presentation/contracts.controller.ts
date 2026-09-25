@@ -139,14 +139,16 @@ export class ContractsController {
   }
 
   @Get(':id/text')
-  @RequirePermissions(Permission.CONTRACTS_VIEW)
+  // O documento traz aluguel e caução: exige ver valores também (regra 4).
+  @RequirePermissions(Permission.CONTRACTS_VIEW, Permission.PAYMENTS_VIEW)
   @ApiOperation({ summary: 'Texto do contrato (congelado se já assinado).' })
   text(@Param('id') id: string) {
     return this.contracts.text(id);
   }
 
   @Get(':id/pdf')
-  @RequirePermissions(Permission.CONTRACTS_VIEW)
+  // O documento traz aluguel e caução: exige ver valores também (regra 4).
+  @RequirePermissions(Permission.CONTRACTS_VIEW, Permission.PAYMENTS_VIEW)
   @ApiOperation({ summary: 'PDF do contrato (visualizar, baixar, imprimir).' })
   async pdf(@Param('id') id: string, @Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
     const { buffer, fileName } = await this.contracts.pdf(id);

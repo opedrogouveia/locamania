@@ -66,6 +66,7 @@ export class PrismaContractsRepository implements ContractsRepository {
       signatureMethod: r.signatureMethod,
       signedAt: r.signedAt,
       signatureIp: r.signatureIp,
+      signatureUserAgent: r.signatureUserAgent,
       sentAt: r.sentAt,
       deliveredAt: r.deliveredAt,
       endedAt: r.endedAt,
@@ -390,6 +391,15 @@ export class PrismaContractsRepository implements ContractsRepository {
     return (await this.prisma.raw.contract.count({
       where: { motorcycleId, status: { in: ['ACTIVE', 'DRAFT'] }, deletedAt: null, ...(exceptId ? { id: { not: exceptId } } : {}) },
     })) > 0;
+  }
+
+  async paidDeposit(contractId: string): Promise<string | null> {
+    const agg = await this.prisma.client.charge.aggregate({
+      where: { contractId, kind: 'DEPOSIT', status: 'PAID' },
+      _sum: { paidAmount: true },
+    });
+    const v = agg._sum.paidAmount;
+    return v && Number(v) > 0 ? v.toFixed(2) : null;
   }
 
   async existingRentCharges(contractId: string) {

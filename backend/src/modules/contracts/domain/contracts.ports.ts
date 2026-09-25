@@ -65,6 +65,7 @@ export interface ContractRecord {
   signatureMethod: SignatureMethod | null;
   signedAt: Date | null;
   signatureIp: string | null;
+  signatureUserAgent: string | null;
   sentAt: Date | null;
   deliveredAt: Date | null;
   endedAt: Date | null;
@@ -170,5 +171,7 @@ export interface ContractsRepository {
 
   customerOpenContract(customerId: string, exceptId?: string): Promise<boolean>;
   motorcycleOpenContract(motorcycleId: string, exceptId?: string): Promise<boolean>;
+  /** Quanto da caução foi efetivamente pago (null se nada). */
+  paidDeposit(contractId: string): Promise<string | null>;
   existingRentCharges(contractId: string): Promise<{ id: string; sequence: number; status: string; amount: string; periodEnd: Ymd | null }[]>;
 }

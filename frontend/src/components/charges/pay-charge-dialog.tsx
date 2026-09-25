@@ -1,6 +1,6 @@
 'use client';
 
-import { PAYMENT_METHOD_LABELS, PaymentMethod, fromCents, toCents, todayYmd, type ChargeDto } from '@locamania/shared';
+import { PAYMENT_METHOD_LABELS, PaymentMethod, Permission, fromCents, toCents, todayYmd, type ChargeDto } from '@locamania/shared';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,11 @@ import { MoneyInput } from '@/components/ui/masked-input';
 import { SelectMenu } from '@/components/ui/select-menu';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toaster';
+import { PhotoPicker } from '@/components/contracts/photo-picker';
 import { errorMessage } from '@/lib/api/client';
+import { useCan } from '@/lib/auth/use-auth';
+import { useUploadMany } from '@/lib/contracts/queries';
+import type { PreparedFile } from '@/lib/files';
 import { usePayCharge } from '@/lib/queries';
 import { formatBRL, formatYmd } from '@/lib/utils';
 
@@ -23,6 +27,9 @@ import { formatBRL, formatYmd } from '@/lib/utils';
  */
 export function PayChargeDialog({ charge, open, onOpenChange }: { charge: ChargeDto | null; open: boolean; onOpenChange: (v: boolean) => void }) {
   const pay = usePayCharge();
+  const upload = useUploadMany();
+  const canDocs = useCan(Permission.DOCUMENTS_MANAGE);
+  const [receipt, setReceipt] = useState<PreparedFile[]>([]);
   const [method, setMethod] = useState<PaymentMethod>(PaymentMethod.PIX);
   const [paidAt, setPaidAt] = useState(todayYmd());
   const [fine, setFine] = useState('');
@@ -39,6 +46,7 @@ export function PayChargeDialog({ charge, open, onOpenChange }: { charge: Charge
     setInterest(charge.lateFees?.interest && toCents(charge.lateFees.interest) > 0 ? charge.lateFees.interest : '');
     setDiscount('');
     setNotes('');
+    setReceipt([]);
     setError(null);
   }, [open, charge]);
 
@@ -51,7 +59,20 @@ export function PayChargeDialog({ charge, open, onOpenChange }: { charge: Charge
     setError(null);
     if (totalCents <= 0) return setError('O total pago precisa ser maior que zero.');
     try {
+      // Comprovante (§11) sobe antes, anexado à própria cobrança.
+      let receiptDocumentId: string | null = null;
+      if (receipt.length) {
+        [receiptDocumentId = null] = await upload.mutateAsync({
+          files: receipt,
+          ownerType: 'CHARGE',
+          ownerId: charge.id,
+          typeCode: 'PAYMENT_RECEIPT',
+          title: `Comprovante — ${charge.number}`,
+          visibleToCustomer: true,
+        });
+      }
       await pay.mutateAsync({
+        receiptDocumentId,
         id: charge.id,
         paidAt,
         method,
@@ -84,7 +105,7 @@ export function PayChargeDialog({ charge, open, onOpenChange }: { charge: Charge
           </div>
           {charge.lateFees && charge.lateFees.daysLate > 0 && (
             <p className="mt-1 text-xs text-destructive">
-              {charge.lateFees.daysLate} dias de atraso · encargos sugeridos {formatBRL(charge.lateFees.total)}
+              {charge.lateFees.daysLate} dias de atraso · encargos sugeridos {formatBRL(fromCents(toCents(charge.lateFees.fine) + toCents(charge.lateFees.interest)))} (total {formatBRL(charge.lateFees.total)})
             </p>
           )}
         </div>
@@ -102,6 +123,9 @@ export function PayChargeDialog({ charge, open, onOpenChange }: { charge: Charge
           <Field label="Data do pagamento" required>
             {(id) => <Input id={id} type="date" value={paidAt} max={todayYmd()} onChange={(e) => setPaidAt(e.target.value)} required />}
           </Field>
+        </FormGrid>
+        {/* Valores lado a lado também no celular: a folha fica curta e o total à vista. */}
+        <FormGrid className="grid-cols-2 gap-3 sm:gap-4">
           <Field label="Multa">{(id) => <MoneyInput id={id} value={fine} onValue={setFine} />}</Field>
           <Field label="Juros">{(id) => <MoneyInput id={id} value={interest} onValue={setInterest} />}</Field>
           <Field label="Desconto">{(id) => <MoneyInput id={id} value={discount} onValue={setDiscount} />}</Field>
@@ -110,13 +134,18 @@ export function PayChargeDialog({ charge, open, onOpenChange }: { charge: Charge
             <span className="text-lg font-semibold tabular">{formatBRL(fromCents(Math.max(totalCents, 0)))}</span>
           </div>
         </FormGrid>
+        {canDocs && (
+          <Field label="Comprovante" hint="Opcional: foto do recibo ou print do PIX.">
+            {() => <PhotoPicker single files={receipt} onChange={setReceipt} label="Anexar comprovante" hint="" disabled={pay.isPending || upload.isPending} />}
+          </Field>
+        )}
         <Field label="Observações">{(id) => <Textarea id={id} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />}</Field>
         <FormError message={error} />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={pay.isPending}>
+          <Button type="submit" disabled={pay.isPending || upload.isPending}>
             Confirmar pagamento
           </Button>
         </DialogFooter>

@@ -56,6 +56,8 @@ export interface ContractDto extends ContractListItemDto {
   signatureMethod: SignatureMethod | null;
   signedAt: string | null;
   signatureIp: string | null;
+  /** Navegador/aparelho do aceite eletrônico (prova do aceite). */
+  signatureUserAgent: string | null;
   documentHash: string | null;
   sentAt: string | null;
   deliveredAt: string | null;

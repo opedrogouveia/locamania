@@ -99,6 +99,7 @@ export class ContractsService {
       signatureMethod: c.signatureMethod,
       signedAt: iso(c.signedAt),
       signatureIp: c.signatureIp,
+      signatureUserAgent: c.signatureUserAgent,
       documentHash: c.documentHash,
       sentAt: iso(c.sentAt),
       deliveredAt: iso(c.deliveredAt),
@@ -443,10 +444,17 @@ export class ContractsService {
     if (input.depositOutcome === 'PARTIALLY_RETAINED' && !(retained && Number(retained) > 0)) {
       throw new ValidationError('Informe quanto da caução foi retido.');
     }
+    // Só se retém o que foi pago: reter caução não paga lançaria receita que não entrou.
+    const paidDeposit = c.depositAmount ? await this.repo.paidDeposit(id) : null;
+    const retaining = input.depositOutcome === 'RETAINED' || input.depositOutcome === 'PARTIALLY_RETAINED';
+    if (retaining && !paidDeposit) {
+      throw new ValidationError('A caução não foi paga, então não há o que reter. Cobre as avarias como pendência da devolução.');
+    }
+    const depositOutcome = !paidDeposit ? 'NONE' : input.depositOutcome;
     const depositRetainedAmount =
-      input.depositOutcome === 'RETAINED' ? c.depositAmount : input.depositOutcome === 'PARTIALLY_RETAINED' ? retained : null;
-    if (depositRetainedAmount && c.depositAmount && toCents(depositRetainedAmount) > toCents(c.depositAmount)) {
-      throw new ValidationError('O valor retido não pode ser maior que a caução.');
+      depositOutcome === 'RETAINED' ? paidDeposit : depositOutcome === 'PARTIALLY_RETAINED' ? retained : null;
+    if (depositRetainedAmount && paidDeposit && toCents(depositRetainedAmount) > toCents(paidDeposit)) {
+      throw new ValidationError('O valor retido não pode ser maior que a caução paga.');
     }
     const extraCharges: NewChargeData[] = (input.extraCharges ?? []).map((e) => {
       const amount = toDecimalInput(e.amount);
@@ -471,7 +479,7 @@ export class ContractsService {
       pendingItems: input.pendingItems?.trim() || null,
       notes: input.notes?.trim() || null,
       nextMotorcycleStatus: input.nextMotorcycleStatus,
-      depositOutcome: c.depositAmount ? input.depositOutcome : 'NONE',
+      depositOutcome,
       depositRetainedAmount,
       extraCharges,
       userId: actor.id,

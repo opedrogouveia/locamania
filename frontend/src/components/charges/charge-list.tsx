@@ -1,7 +1,7 @@
 'use client';
 
-import { CHARGE_KIND_LABELS, PAYMENT_METHOD_LABELS, Permission, type ChargeDto } from '@locamania/shared';
-import { Ban, Download, MoreHorizontal, QrCode, Receipt, RotateCcw, Wallet } from 'lucide-react';
+import { CHARGE_KIND_LABELS, PAYMENT_METHOD_LABELS, Permission, fromCents, toCents, type ChargeDto } from '@locamania/shared';
+import { Ban, Download, MoreHorizontal, Paperclip, QrCode, Receipt, RotateCcw, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -16,11 +16,23 @@ import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } fr
 import { Textarea } from '@/components/ui/textarea';
 import { FormError } from '@/components/ui/form-error';
 import { downloadFile, errorMessage, openFile } from '@/lib/api/client';
-import { chargesApi } from '@/lib/api/resources';
+import { chargesApi, documentsApi } from '@/lib/api/resources';
 import { useCan } from '@/lib/auth/use-auth';
 import { useCancelCharge, useReverseCharge, useSimulatePix } from '@/lib/queries';
 import { cn, formatBRL, formatDateTime, formatYmd } from '@/lib/utils';
 import { PayChargeDialog } from './pay-charge-dialog';
+
+/** Multa + juros de atraso (o `lateFees.total` da API inclui o valor da cobrança). */
+function feesOf(c: ChargeDto): string {
+  return c.lateFees ? fromCents(toCents(c.lateFees.fine) + toCents(c.lateFees.interest)) : '0.00';
+}
+
+/** "Aluguel semana 3 — LOC-2026-0012" vira "Aluguel semana 3" dentro do próprio contrato. */
+function describe(c: ChargeDto, hide: string[]): string {
+  if (!hide.includes('contract') || !c.contract) return c.description;
+  const suffix = ` — ${c.contract.number}`;
+  return c.description.endsWith(suffix) ? c.description.slice(0, -suffix.length) : c.description;
+}
 
 /** Pede o motivo (estorno/cancelamento) — fica no histórico. */
 function ReasonDialog({
@@ -91,6 +103,7 @@ function ReasonDialog({
 /** Menu de ações de uma cobrança + diálogos (pagar, estornar, cancelar). */
 export function useChargeActions() {
   const canManage = useCan(Permission.PAYMENTS_MANAGE);
+  const canDocs = useCan(Permission.DOCUMENTS_VIEW);
   const [paying, setPaying] = useState<ChargeDto | null>(null);
   const [reasonFor, setReasonFor] = useState<{ charge: ChargeDto; kind: 'reverse' | 'cancel' } | null>(null);
   const reverse = useReverseCharge();
@@ -138,6 +151,11 @@ export function useChargeActions() {
           {c.status === 'PAID' && (
             <DropdownMenuItem onSelect={() => run(() => openFile(chargesApi.receiptPath(c.id)))}>
               <Receipt /> Ver recibo
+            </DropdownMenuItem>
+          )}
+          {c.receiptDocumentId && canDocs && (
+            <DropdownMenuItem onSelect={() => run(() => openFile(documentsApi.filePath(c.receiptDocumentId!)))}>
+              <Paperclip /> Ver comprovante
             </DropdownMenuItem>
           )}
           {c.status === 'PAID' && (
@@ -206,7 +224,7 @@ export function ChargeList({
     {
       key: 'due',
       header: 'Vencimento',
-      cell: (c) => <span className="tabular">{formatYmd(c.dueDate)}</span>,
+      cell: (c) => <span className="whitespace-nowrap tabular">{formatYmd(c.dueDate)}</span>,
     },
     ...(hide.includes('customer')
       ? []
@@ -215,7 +233,7 @@ export function ChargeList({
             key: 'customer',
             header: 'Cliente',
             cell: (c: ChargeDto) => (
-              <Link href={`/admin/customers/${c.customer.id}`} className="font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
+              <Link href={`/admin/customers/${c.customer.id}`} className="block max-w-[14rem] truncate font-medium hover:underline xl:max-w-[18rem]" title={c.customer.label} onClick={(e) => e.stopPropagation()}>
                 {c.customer.label}
               </Link>
             ),
@@ -224,10 +242,13 @@ export function ChargeList({
     {
       key: 'desc',
       header: 'Descrição',
+      className: 'w-full max-w-0',
       cell: (c) => (
         <div className="min-w-0">
-          <p className="truncate">{c.description}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="truncate" title={describe(c, hide)}>
+            {describe(c, hide)}
+          </p>
+          <p className="truncate text-xs text-muted-foreground">
             {c.number}
             {!hide.includes('contract') && c.contract && ` · ${c.contract.number}`}
             {!hide.includes('kind') && c.kind !== 'RENT' && ` · ${CHARGE_KIND_LABELS[c.kind]}`}
@@ -241,8 +262,8 @@ export function ChargeList({
       align: 'right',
       cell: (c) => (
         <div>
-          <p className="font-medium">{formatBRL(c.paidAmount ?? c.amount)}</p>
-          {c.lateFees && c.lateFees.daysLate > 0 && <p className="text-xs text-destructive">+{formatBRL(c.lateFees.total)} encargos</p>}
+          <p className="whitespace-nowrap font-medium">{formatBRL(c.paidAmount ?? c.amount)}</p>
+          {c.lateFees && c.lateFees.daysLate > 0 && <p className="whitespace-nowrap text-xs text-destructive">+{formatBRL(feesOf(c))} encargos</p>}
         </div>
       ),
     },
@@ -253,7 +274,7 @@ export function ChargeList({
       hideBelow: 'lg',
       cell: (c) =>
         c.paidAt ? (
-          <div className="text-xs">
+          <div className="whitespace-nowrap text-xs">
             <p>{formatDateTime(c.paidAt)}</p>
             <p className="text-muted-foreground">
               {c.method ? PAYMENT_METHOD_LABELS[c.method] : ''}
@@ -261,7 +282,7 @@ export function ChargeList({
             </p>
           </div>
         ) : c.lateFees && c.lateFees.daysLate > 0 ? (
-          <span className="text-xs text-destructive">{c.lateFees.daysLate} dias de atraso</span>
+          <span className="whitespace-nowrap text-xs text-destructive">{c.lateFees.daysLate} dias de atraso</span>
         ) : (
           <span className="text-muted-foreground">—</span>
         ),
@@ -283,11 +304,12 @@ export function ChargeList({
             <div className="min-w-0 flex-1">
               <MobileRow
                 wrapTitle
-                title={hide.includes('customer') ? c.description : c.customer.label}
-                subtitle={hide.includes('customer') ? `${c.number} · vence ${formatYmd(c.dueDate)}` : `${c.description} · vence ${formatYmd(c.dueDate)}`}
+                title={hide.includes('customer') ? describe(c, hide) : c.customer.label}
+                subtitle={hide.includes('customer') ? `${c.number} · vence ${formatYmd(c.dueDate)}` : describe(c, hide)}
                 meta={
                   <>
                     <ChargeStatusBadge status={c.displayStatus} />
+                    {!hide.includes('customer') && !c.paidAt && <span className="tabular">vence {formatYmd(c.dueDate)}</span>}
                     {c.paidAt ? (
                       <span>
                         Pago em {formatDateTime(c.paidAt)}
@@ -295,7 +317,7 @@ export function ChargeList({
                       </span>
                     ) : c.lateFees && c.lateFees.daysLate > 0 ? (
                       <span className="text-destructive">
-                        {c.lateFees.daysLate} dias · +{formatBRL(c.lateFees.total)}
+                        {c.lateFees.daysLate} dias · +{formatBRL(feesOf(c))} encargos
                       </span>
                     ) : null}
                   </>
