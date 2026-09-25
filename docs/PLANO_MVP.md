@@ -299,68 +299,68 @@ Barra inferior no celular (Início, Pagamentos, Moto, Avisos, Mais); barra super
 - [x] 0.8 Verificação: `pnpm typecheck lint test build`; login com cada perfil e com cliente; commit
 
 ### Etapa 1 — Cadastros e configurações
-- [ ] 1.1 Usuários (CRUD, travas do último proprietário) + matriz de permissões editável
-- [ ] 1.2 Configurações: empresa, parâmetros (pagamento, avisos, inadimplência, manutenção, documentos, contrato ocioso), catálogos, tipos de manutenção, formas de pagamento, modelo de contrato
-- [ ] 1.3 Clientes: CRUD, CPF/CEP/telefone validados, ViaCEP, CNH, situação, convite ao app
-- [ ] 1.4 Motos: CRUD, situação com motivo, quilometragem (leituras), rastreador
-- [ ] 1.5 Pesquisa global (API + barra + Ctrl+K)
+- [x] 1.1 Usuários (CRUD, travas do último proprietário) + matriz de permissões editável
+- [x] 1.2 Configurações: empresa, parâmetros (pagamento, avisos, inadimplência, manutenção, documentos, contrato ocioso), catálogos, tipos de manutenção, formas de pagamento, modelo de contrato
+- [x] 1.3 Clientes: CRUD, CPF/CEP/telefone validados, ViaCEP, CNH, situação, convite ao app
+- [x] 1.4 Motos: CRUD, situação com motivo, quilometragem (leituras), rastreador
+- [x] 1.5 Pesquisa global (API + barra + Ctrl+K)
 
 ### Etapa 2 — Contratos
-- [ ] 2.1 Novo aluguel (assistente) com prévia do cronograma; moto fica RESERVADA
-- [ ] 2.2 Modelo de contrato → texto congelado → PDF (ver/baixar/imprimir), envio ao cliente
-- [ ] 2.3 Assinatura: presencial (upload do assinado) e aceite eletrônico no app (IP, UA, hash)
-- [ ] 2.4 Entrega: km inicial + fotos → moto ALUGADA, cronograma e caução gerados, cliente ATIVO, convite
-- [ ] 2.5 Reajuste de valor (parcelas futuras), prorrogação, cancelamento
+- [x] 2.1 Novo aluguel (assistente) com prévia do cronograma; moto fica RESERVADA
+- [x] 2.2 Modelo de contrato → texto congelado → PDF (ver/baixar/imprimir), envio ao cliente
+- [x] 2.3 Assinatura: presencial (upload do assinado) e aceite eletrônico no app (IP, UA, hash)
+- [x] 2.4 Entrega: km inicial + fotos → moto ALUGADA, cronograma e caução gerados, cliente ATIVO, convite
+- [x] 2.5 Reajuste de valor (parcelas futuras), prorrogação, cancelamento
 
 ### Etapa 3 — Pagamentos e inadimplência
-- [ ] 3.1 Lista de cobranças com situação derivada, filtros e totais
-- [ ] 3.2 Registrar pagamento (encargos sugeridos, comprovante), estorno, cobrança avulsa
-- [ ] 3.3 Gateway: porta + provedor sandbox (PIX, QR, webhook HMAC, idempotência)
-- [ ] 3.4 Jobs: atraso, lembretes, escalonamento (bloqueio/cobrança), recalculo da situação do cliente
-- [ ] 3.5 Tela de inadimplência + link de cobrança pelo WhatsApp
+- [x] 3.1 Lista de cobranças com situação derivada, filtros e totais
+- [x] 3.2 Registrar pagamento (encargos sugeridos, comprovante), estorno, cobrança avulsa
+- [x] 3.3 Gateway: porta + provedor sandbox (PIX, QR, webhook HMAC, idempotência)
+- [x] 3.4 Jobs: atraso, lembretes, escalonamento (bloqueio/cobrança), recalculo da situação do cliente
+- [x] 3.5 Tela de inadimplência + link de cobrança pelo WhatsApp
 
 ### Etapa 4 — Manutenção
-- [ ] 4.1 Planos por moto (km/data/intervalo) criados a partir dos tipos
-- [ ] 4.2 Registros (agendada, em andamento, realizada), recálculo do próximo intervalo, moto EM MANUTENÇÃO
-- [ ] 4.3 Página por status + alertas + visão do cliente
+- [x] 4.1 Planos por moto (km/data/intervalo) criados a partir dos tipos
+- [x] 4.2 Registros (agendada, em andamento, realizada), recálculo do próximo intervalo, moto EM MANUTENÇÃO
+- [x] 4.3 Página por status + alertas + visão do cliente
 
 ### Etapa 5 — Documentos, fotos, ocorrências, devolução
-- [ ] 5.1 Documentos/fotos (upload com redução, validade, visível ao cliente) em todas as fichas
-- [ ] 5.2 Ocorrências e multas + cobrar do cliente
-- [ ] 5.3 Devolução: vistoria, pendências, caução, destino da moto, encerramento do contrato
+- [x] 5.1 Documentos/fotos (upload com redução, validade, visível ao cliente) em todas as fichas
+- [x] 5.2 Ocorrências e multas + cobrar do cliente
+- [x] 5.3 Devolução: vistoria, pendências, caução, destino da moto, encerramento do contrato
 
 ### Etapa 6 — Notificações e dashboard
-- [ ] 6.1 Serviço de notificação (in-app, e-mail, WhatsApp adaptador) com deduplicação e registro de entrega
-- [ ] 6.2 Sino + central (painel), avisos aos clientes, suporte
-- [ ] 6.3 Dashboard com indicadores e alertas
-- [ ] 6.4 Jobs de manutenção, documentos, contratos e motos paradas; `/jobs/run`
+- [x] 6.1 Serviço de notificação (in-app, e-mail, WhatsApp adaptador) com deduplicação e registro de entrega
+- [x] 6.2 Sino + central (painel), avisos aos clientes, suporte
+- [x] 6.3 Dashboard com indicadores e alertas
+- [x] 6.4 Jobs de manutenção, documentos, contratos e motos paradas; `/jobs/run`
 
 ### Etapa 7 — App do cliente
-- [ ] 7.1 API `/portal/*` (só dados do próprio cliente) + testes de isolamento
-- [ ] 7.2 Telas: início, pagamentos + PIX, moto + informar km, contrato + aceite, manutenção, avisos, perfil, suporte
+- [x] 7.1 API `/portal/*` (só dados do próprio cliente) + testes de isolamento
+- [x] 7.2 Telas: início, pagamentos + PIX, moto + informar km, contrato + aceite, manutenção, avisos, perfil, suporte
 
 ### Etapa 8 — Financeiro, relatórios, histórico
-- [ ] 8.1 Lançamentos (receitas/despesas) + painel financeiro por período
-- [ ] 8.2 Relatórios (5) com exportação PDF e Excel (auditada como EXPORT)
-- [ ] 8.3 Histórico/auditoria em linguagem natural + linha do tempo nas fichas
+- [x] 8.1 Lançamentos (receitas/despesas) + painel financeiro por período
+- [x] 8.2 Relatórios (5) com exportação PDF e Excel (auditada como EXPORT)
+- [x] 8.3 Histórico/auditoria em linguagem natural + linha do tempo nas fichas
 
 ### Etapa 9 — Rastreamento
-- [ ] 9.1 Porta `TrackerProvider` (capacidades) + provedor sandbox; posição e última comunicação na ficha
-- [ ] 9.2 Bloqueio: dupla confirmação, motivo, registro, só se o provedor suportar
+- [x] 9.1 Porta `TrackerProvider` (capacidades) + provedor sandbox; posição e última comunicação na ficha
+- [x] 9.2 Bloqueio: dupla confirmação, motivo, registro, só se o provedor suportar
 
 ### Etapa 10 — Dados de demonstração
-- [ ] 10.1 Seed de 12 meses: ~40 motos, ~130 clientes, contratos ativos e encerrados, pagamentos com atrasos realistas, manutenções, ocorrências, multas, despesas, documentos, notificações, mensagens e histórico de auditoria
+- [x] 10.1 Seed de 12 meses: ~40 motos, ~130 clientes, contratos ativos e encerrados, pagamentos com atrasos realistas, manutenções, ocorrências, multas, despesas, documentos, notificações, mensagens e histórico de auditoria
 
 ### Etapa 11 — Qualidade
-- [ ] 11.1 Testes de regra (shared + domínio) e de isolamento do cliente
-- [ ] 11.2 `scripts/smoke.sh`: login de cada perfil, permissões, fluxo de aluguel, PIX sandbox
-- [ ] 11.3 Revisão visual (Chromium headless) em 390 px e 1440 px de todas as telas
+- [x] 11.1 Testes de regra (shared + domínio) e de isolamento do cliente
+- [x] 11.2 `scripts/smoke.mjs`: login de cada perfil, permissões, isolamento do cliente e (`--write`) fluxo de aluguel com PIX sandbox até a devolução
+- [x] 11.3 Revisão visual (Chromium headless) em 390 px e 1440 px de todas as telas
 
 ### Etapa 12 — Deploy e suporte
-- [ ] 12.1 `backend/Dockerfile`, `render.yaml`, `frontend/vercel.json`
-- [ ] 12.2 GitHub Actions: CI (typecheck/test), backup diário, agendador dos jobs
-- [ ] 12.3 `docs/DEPLOY.md` campo a campo (Supabase, Render, Vercel, Resend)
-- [ ] 12.4 `docs/MANUAL_ADMIN.md`, `docs/RUNBOOK.md` (operação, backup/restauração, incidentes)
+- [x] 12.1 `backend/Dockerfile`, `render.yaml`, `frontend/vercel.json`
+- [x] 12.2 GitHub Actions: CI (typecheck/test), backup diário, agendador dos jobs
+- [x] 12.3 `docs/DEPLOY.md` campo a campo (Supabase, Render, Vercel, Resend)
+- [x] 12.4 `docs/MANUAL_ADMIN.md`, `docs/RUNBOOK.md` (operação, backup/restauração, incidentes)
 
 ### Etapa 13 — Entrega
 - [ ] 13.1 Stack rodando na máquina do Pedro com os dados de demonstração

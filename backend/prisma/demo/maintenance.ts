@@ -70,18 +70,18 @@ function partFor(w: World, m: MotoSim, code: string, firstRevision: boolean): { 
             part: m.spec.belt
               ? 'Revisão: freios, transmissão CVT, filtro de ar, vela e parte elétrica'
               : 'Revisão: freios, embreagem, folga da corrente, filtro de ar, vela e parte elétrica',
-            cents: c(180, 350),
+            cents: c(140, 260),
           };
     case 'BRAKE_PADS':
       return { part: m.spec.disc ? 'Pastilhas de freio dianteiras' : 'Lonas (sapatas) de freio traseiras', cents: c(80, 150) };
     case 'TIRES':
       return rng.chance(0.7)
-        ? { part: `Pneu traseiro ${m.spec.tire}`, cents: c(180, 320) }
-        : { part: 'Par de pneus (dianteiro e traseiro)', cents: Math.round(c(180, 320) * 1.8) };
+        ? { part: `Pneu traseiro ${m.spec.tire}`, cents: c(150, 260) }
+        : { part: 'Par de pneus (dianteiro e traseiro)', cents: Math.round(c(150, 260) * 1.8) };
     case 'CHAIN_KIT':
-      return { part: 'Kit relação (coroa, pinhão e corrente)', cents: c(250, 400) };
+      return { part: 'Kit relação (coroa, pinhão e corrente)', cents: c(180, 300) };
     case 'BELT':
-      return { part: 'Correia de transmissão CVT e roletes', cents: c(350, 480) };
+      return { part: 'Correia de transmissão CVT e roletes', cents: c(250, 380) };
     case 'BATTERY':
       return { part: `Bateria selada 12 V ${m.spec.model === 'POP_110I' || m.spec.model === 'BIZ_125' ? '4' : '5'} Ah`, cents: c(180, 260) };
     default:

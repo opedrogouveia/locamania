@@ -91,6 +91,7 @@ export function Pagination({
             disabled={page <= 1}
             aria-label="Primeira página"
             title="Primeira página"
+            className="hidden sm:inline-flex"
           >
             <ChevronsLeft />
           </Button>
@@ -100,33 +101,36 @@ export function Pagination({
             onClick={() => onPageChange(page - 1)}
             disabled={page <= 1}
             aria-label="Página anterior"
+            className="size-10 sm:size-8"
           >
             <ChevronLeft />
           </Button>
 
-          {sequence.map((item, i) =>
-            item === '…' ? (
-              <span
-                key={`gap-${i}`}
-                className="px-1 text-sm text-muted-foreground"
-                aria-hidden
-              >
-                …
-              </span>
-            ) : (
-              <Button
-                key={item}
-                variant={item === page ? 'default' : 'outline'}
-                size="icon-sm"
-                onClick={() => onPageChange(item)}
-                aria-label={`Página ${item}`}
-                aria-current={item === page ? 'page' : undefined}
-                className="tabular-nums"
-              >
-                {item}
-              </Button>
-            ),
-          )}
+          {/* Celular: só anterior / "2 de 7" / próxima — os números não cabem em 390 px. */}
+          <span className="min-w-14 px-1 text-center text-sm tabular-nums sm:hidden" aria-hidden>
+            {page} / {pages}
+          </span>
+          <div className="hidden items-center gap-1 sm:flex">
+            {sequence.map((item, i) =>
+              item === '…' ? (
+                <span key={`gap-${i}`} className="px-1 text-sm text-muted-foreground" aria-hidden>
+                  …
+                </span>
+              ) : (
+                <Button
+                  key={item}
+                  variant={item === page ? 'default' : 'outline'}
+                  size="icon-sm"
+                  onClick={() => onPageChange(item)}
+                  aria-label={`Página ${item}`}
+                  aria-current={item === page ? 'page' : undefined}
+                  className="tabular-nums"
+                >
+                  {item}
+                </Button>
+              ),
+            )}
+          </div>
 
           <Button
             variant="outline"
@@ -134,6 +138,7 @@ export function Pagination({
             onClick={() => onPageChange(page + 1)}
             disabled={page >= pages}
             aria-label="Próxima página"
+            className="size-10 sm:size-8"
           >
             <ChevronRight />
           </Button>
@@ -144,6 +149,7 @@ export function Pagination({
             disabled={page >= pages}
             aria-label="Última página"
             title="Última página"
+            className="hidden sm:inline-flex"
           >
             <ChevronsRight />
           </Button>

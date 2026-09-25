@@ -456,7 +456,11 @@ export function addCancelledContracts(w: World): void {
   }
 }
 
-/** Quilometragem dia a dia: entregador roda 150–250 km/dia (menos no domingo). */
+/**
+ * Quilometragem dia a dia: entregador roda 90–160 km/dia (menos no domingo) —
+ * ~3.300 km/mês, o que dá ~1 troca de óleo por mês e um custo de manutenção de
+ * ~25% do aluguel (com 150–250 km/dia o financeiro da demonstração fechava no vermelho).
+ */
 export function simulateKm(w: World): void {
   const { rng, clock } = w;
   const n = clock.todayIdx + 1;
@@ -464,7 +468,7 @@ export function simulateKm(w: World): void {
     const dayKm = new Array<number>(n).fill(0);
     for (const c of m.contracts) {
       if (!c.delivered) continue;
-      c.dailyKm = rng.int(150, 250);
+      c.dailyKm = rng.int(90, 160);
       const endRide = c.status === 'ACTIVE' ? clock.todayIdx : (c.returnIdx ?? c.startIdx);
       for (let d = c.startIdx; d < endRide && d < n; d++) {
         if (rng.chance(0.05)) continue; // folga
