@@ -233,9 +233,11 @@ export class MotorcyclesService {
     return this.get(id, actor);
   }
 
-  async history(id: string): Promise<MotorcycleHistoryItemDto[]> {
+  async history(id: string, actor: Principal): Promise<MotorcycleHistoryItemDto[]> {
     if (!(await this.repo.findById(id))) throw new NotFoundError('Moto não encontrada.');
-    return (await this.repo.history(id)).map((h) => ({ ...h, date: iso(h.date) }));
+    // Gasto é lançamento financeiro (traz o valor): some para quem não tem `finance.view`.
+    const canFinance = hasPermission(actor, Permission.FINANCE_VIEW);
+    return (await this.repo.history(id)).filter((h) => canFinance || h.kind !== 'EXPENSE').map((h) => ({ ...h, date: iso(h.date) }));
   }
 
   /** Busca "CG 160" encontra as motos cujo modelo/marca tem esse rótulo. */

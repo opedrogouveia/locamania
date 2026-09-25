@@ -124,8 +124,8 @@ export class MotorcyclesController {
   @Get(':id/history')
   @RequirePermissions(Permission.MOTORCYCLES_VIEW)
   @ApiOperation({ summary: 'Histórico completo da moto (§6).' })
-  history(@Param('id') id: string): Promise<MotorcycleHistoryItemDto[]> {
-    return this.motorcycles.history(id);
+  history(@Param('id') id: string, @CurrentStaff() actor: StaffPrincipal): Promise<MotorcycleHistoryItemDto[]> {
+    return this.motorcycles.history(id, actor);
   }
 
   @Delete(':id')

@@ -90,7 +90,8 @@ export const useCustomerStatus = (id: string) =>
 export const useCustomerCollection = (id: string) => useAction((v: boolean) => customersApi.setCollection(id, v), [K.customers, K.charges]);
 export const useInviteCustomer = (id: string) => useAction(() => customersApi.invite(id), [K.customers]);
 export const useDisablePortal = (id: string) => useAction(() => customersApi.disablePortal(id), [K.customers]);
-export const useArchiveCustomer = () => useAction(customersApi.archive, [K.customers, K.dashboard]);
+// Arquivar: só listas (a ficha aberta sairia com 404 ao recarregar o que acabou de ser arquivado).
+export const useArchiveCustomer = () => useAction(customersApi.archive, [[...K.customers, 'list'], ['customers', 'lookup'], K.dashboard]);
 
 // ───────────── Motos ─────────────
 export const useMotorcycles = (q: ListMotorcyclesQuery, enabled = true) =>
@@ -108,7 +109,7 @@ export const useAddOdometer = (id: string) =>
   useAction((b: { km: number; notes?: string | null }) => motorcyclesApi.addOdometer(id, b.km, b.notes), [K.motorcycles, K.maintenance, K.dashboard]);
 export const useUpsertPlan = (id: string) =>
   useAction((b: Parameters<typeof motorcyclesApi.upsertPlan>[1]) => motorcyclesApi.upsertPlan(id, b), [K.maintenance, K.motorcycles, K.dashboard]);
-export const useArchiveMotorcycle = () => useAction(motorcyclesApi.archive, [K.motorcycles, K.dashboard]);
+export const useArchiveMotorcycle = () => useAction(motorcyclesApi.archive, [[...K.motorcycles, 'list'], ['motorcycles', 'lookup'], K.dashboard]);
 
 // ───────────── Contratos ─────────────
 export const useContracts = (q: ListContractsQuery, enabled = true) =>
@@ -165,7 +166,7 @@ export const useCreateOccurrence = () => useAction(occurrencesApi.create, [K.occ
 export const useUpdateOccurrence = (id: string) => useAction((b: Parameters<typeof occurrencesApi.update>[1]) => occurrencesApi.update(id, b), [K.occurrences]);
 export const useChargeOccurrence = (id: string) =>
   useAction((b: Parameters<typeof occurrencesApi.charge>[1]) => occurrencesApi.charge(id, b), [K.occurrences, ...MONEY_KEYS]);
-export const useArchiveOccurrence = () => useAction(occurrencesApi.archive, [K.occurrences]);
+export const useArchiveOccurrence = () => useAction(occurrencesApi.archive, [[...K.occurrences, 'list'], K.dashboard]);
 
 // ───────────── Documentos ─────────────
 export const useDocuments = (q: ListDocumentsQuery, enabled = true) =>
