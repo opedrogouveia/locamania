@@ -119,7 +119,7 @@ export function Pagination({
                 variant={item === page ? 'default' : 'outline'}
                 size="icon-sm"
                 onClick={() => onPageChange(item)}
-                aria-label={`Page ${item}`}
+                aria-label={`Página ${item}`}
                 aria-current={item === page ? 'page' : undefined}
                 className="tabular-nums"
               >

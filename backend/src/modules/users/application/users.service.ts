@@ -49,7 +49,12 @@ export class UsersService {
     return (await this.repo.list()).map(toDto);
   }
 
-  async create(input: CreateUserRequest): Promise<UserDto> {
+  async create(input: CreateUserRequest, actor: StaffPrincipal): Promise<UserDto> {
+    // Só o Proprietário cria outro Proprietário (a matriz de permissões é editável:
+    // um Administrador com users.manage não pode se promover por tabela).
+    if (input.role === 'OWNER' && actor.role !== 'OWNER') {
+      throw new ValidationError('Só um Proprietário pode dar o perfil de Proprietário.');
+    }
     const email = normalizeEmail(input.email);
     if (await this.repo.findByEmail(email)) throw new ConflictError('Já existe um usuário com este e-mail.');
     assertPasswordStrong(input.password);
@@ -107,6 +112,12 @@ export class UsersService {
     assertKeepsAnOwner(target, { archived: true }, await this.repo.countActiveOwners(id));
     await this.repo.archive(id);
     this.sessions.forget('staff', id);
+  }
+
+  async profile(id: string): Promise<UserDto> {
+    const user = await this.repo.findById(id);
+    if (!user) throw new NotFoundError('Usuário não encontrado.');
+    return toDto(user);
   }
 
   async updateProfile(actor: StaffPrincipal, input: UpdateProfileRequest): Promise<UserDto> {

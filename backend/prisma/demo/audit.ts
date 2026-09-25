@@ -198,15 +198,17 @@ export function buildJobsAndGateway(w: World): void {
       status: 'SUCCESS',
       startedAt,
       finishedAt: new Date(startedAt.getTime() + rng.int(2500, 9000)),
+      // Mesmas chaves que o JobsService.runDaily grava (a tela de Sistema lê estas).
       summary: {
         overdueMarked,
         remindersSent: rng.int(8, 18),
-        customerStatusesUpdated: overdueMarked + rng.int(0, 2),
+        autoBlocked: 0,
+        blockSuggested: rng.int(0, 2),
+        sentToCollection: rng.int(0, 1),
         maintenanceAlerts: rng.int(2, 6),
         documentAlerts: rng.int(1, 4),
-        contractEndingAlerts: rng.int(1, 3),
-        idleMotorcycleAlerts: rng.int(1, 3),
-        emailsSent: rng.int(6, 15),
+        contractAlerts: rng.int(1, 3),
+        idleAlerts: rng.int(1, 3),
       },
     });
   }

@@ -70,8 +70,8 @@ export class UsersController {
 
   @Post('users')
   @RequirePermissions(Permission.USERS_MANAGE)
-  create(@Body() dto: CreateUserDto): Promise<UserDto> {
-    return this.users.create(dto);
+  create(@Body() dto: CreateUserDto, @CurrentStaff() actor: StaffPrincipal): Promise<UserDto> {
+    return this.users.create(dto, actor);
   }
 
   @Patch('users/:id')
@@ -120,6 +120,12 @@ export class UsersController {
   @ApiOperation({ summary: 'Define as permissões de um perfil (o Proprietário é travado).' })
   setRole(@Param('role') role: StaffRole, @Body() dto: RolePermissionsBody): Promise<RolePermissionsDto> {
     return this.users.setRolePermissions(role, dto.permissions);
+  }
+
+  /** Dados do próprio usuário (tela "Meu perfil"). */
+  @Get('me')
+  profile(@CurrentStaff() actor: StaffPrincipal): Promise<UserDto> {
+    return this.users.profile(actor.id);
   }
 
   /** O próprio usuário edita nome e telefone. */
