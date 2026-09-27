@@ -5,40 +5,38 @@
 
 /*
  * Design tokens — Locamania
- * Identidade: orquídea (rosa-magenta) sobre neutros levemente quentes — moderno,
- * um pouco feminino, sem perder a seriedade de um sistema financeiro. A cor fica
- * na ação e na marca; os neutros só carregam um toque do tom (hue 330–342).
- * Orquídea (342) fica longe do vermelho de erro (27) para "botão principal" e
- * "ação destrutiva" nunca se confundirem. Trocar a marca = --primary/--ring/
- * --accent/--chart-1 e --brand-*, só aqui. Tudo em OKLCH.
+ * Identidade: verde-petróleo sobre neutros com um leve toque do mesmo tom
+ * (hue ~200–205) — moderno, calmo e profissional (escolha do Pedro em 27/09/2026,
+ * depois de recusar o rosa). Acento pêssego só no logo. Trocar a marca =
+ * --primary/--ring/--accent/--chart-1 e --brand-*, só aqui. Tudo em OKLCH.
  */
 :root {
   --radius: 0.875rem;
 
   /* Superfícies */
-  --background: oklch(0.984 0.005 340);
-  --foreground: oklch(0.22 0.03 330);
+  --background: oklch(0.984 0.005 205);
+  --foreground: oklch(0.22 0.03 205);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.03 330);
+  --card-foreground: oklch(0.22 0.03 205);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.03 330);
+  --popover-foreground: oklch(0.22 0.03 205);
 
   /* Marca */
-  --primary: oklch(0.54 0.19 342);
-  --primary-foreground: oklch(0.99 0.005 340);
+  --primary: oklch(0.5 0.105 200);
+  --primary-foreground: oklch(0.99 0.005 205);
 
   /* Cores de marca (logo, login, app do cliente). */
-  --brand: oklch(0.54 0.19 342);
-  --brand-strong: oklch(0.36 0.13 336);
+  --brand: oklch(0.5 0.105 200);
+  --brand-strong: oklch(0.32 0.072 200);
   --brand-accent: oklch(0.84 0.1 45);
 
   /* Neutros de apoio */
-  --secondary: oklch(0.963 0.01 340);
-  --secondary-foreground: oklch(0.3 0.04 335);
-  --muted: oklch(0.965 0.008 340);
-  --muted-foreground: oklch(0.52 0.025 330);
-  --accent: oklch(0.955 0.02 342);
-  --accent-foreground: oklch(0.36 0.1 342);
+  --secondary: oklch(0.963 0.01 205);
+  --secondary-foreground: oklch(0.3 0.04 205);
+  --muted: oklch(0.965 0.008 205);
+  --muted-foreground: oklch(0.52 0.025 205);
+  --accent: oklch(0.955 0.02 200);
+  --accent-foreground: oklch(0.32 0.055 200);
 
   /* Semânticos */
   --destructive: oklch(0.58 0.21 27);
@@ -51,49 +49,50 @@
   --info-foreground: oklch(0.99 0 0);
 
   /* Linhas e foco */
-  --border: oklch(0.925 0.01 340);
-  --input: oklch(0.9 0.013 340);
-  --ring: oklch(0.54 0.19 342);
+  --border: oklch(0.925 0.01 205);
+  --input: oklch(0.9 0.013 205);
+  --ring: oklch(0.5 0.105 200);
 
   /* Sidebar (superfície dedicada) */
-  --sidebar: oklch(0.994 0.003 340);
-  --sidebar-foreground: oklch(0.22 0.03 330);
-  --sidebar-accent: oklch(0.96 0.016 342);
-  --sidebar-accent-foreground: oklch(0.36 0.1 342);
-  --sidebar-border: oklch(0.93 0.01 340);
-  --sidebar-ring: oklch(0.54 0.19 342);
+  --sidebar: oklch(0.994 0.003 205);
+  --sidebar-foreground: oklch(0.22 0.03 205);
+  --sidebar-accent: oklch(0.96 0.016 200);
+  --sidebar-accent-foreground: oklch(0.32 0.055 200);
+  --sidebar-border: oklch(0.93 0.01 205);
+  --sidebar-ring: oklch(0.5 0.105 200);
 
-  /* Gráficos (dataviz validate_palette, modo claro no branco; ordem de uso:
-     1 alugada, 2 disponível, 5 reservada, 3 manutenção, 4 bloqueada).
+  /* Gráficos (dataviz validate_palette, modo claro no branco). Ordem na barra
+     da frota: 1 alugada, 5 reservada, 2 disponível, 3 manutenção, 4 bloqueada —
+     petróleo nunca encosta no verde (ficariam parecidos).
      Âmbar < 3:1 no branco → sempre com rótulo visível ao lado. */
-  --chart-1: oklch(0.54 0.19 342);
+  --chart-1: oklch(0.58 0.115 192);
   --chart-2: oklch(0.62 0.15 150);
   --chart-3: oklch(0.76 0.15 75);
   --chart-4: oklch(0.58 0.22 27);
-  --chart-5: oklch(0.6 0.13 235);
+  --chart-5: oklch(0.56 0.17 300);
 }
 
 .dark {
-  --background: oklch(0.17 0.02 335);
-  --foreground: oklch(0.96 0.008 340);
-  --card: oklch(0.215 0.024 335);
-  --card-foreground: oklch(0.96 0.008 340);
-  --popover: oklch(0.225 0.026 335);
-  --popover-foreground: oklch(0.96 0.008 340);
+  --background: oklch(0.17 0.02 205);
+  --foreground: oklch(0.96 0.008 205);
+  --card: oklch(0.215 0.024 205);
+  --card-foreground: oklch(0.96 0.008 205);
+  --popover: oklch(0.225 0.026 205);
+  --popover-foreground: oklch(0.96 0.008 205);
 
-  --primary: oklch(0.72 0.15 345);
-  --primary-foreground: oklch(0.17 0.02 335);
+  --primary: oklch(0.68 0.083 200);
+  --primary-foreground: oklch(0.17 0.02 205);
 
-  --brand: oklch(0.66 0.16 342);
-  --brand-strong: oklch(0.3 0.09 336);
+  --brand: oklch(0.62 0.088 200);
+  --brand-strong: oklch(0.26 0.05 200);
   --brand-accent: oklch(0.83 0.1 45);
 
-  --secondary: oklch(0.27 0.022 335);
-  --secondary-foreground: oklch(0.96 0.008 340);
-  --muted: oklch(0.27 0.022 335);
-  --muted-foreground: oklch(0.72 0.02 335);
-  --accent: oklch(0.3 0.035 340);
-  --accent-foreground: oklch(0.96 0.008 340);
+  --secondary: oklch(0.27 0.022 205);
+  --secondary-foreground: oklch(0.96 0.008 205);
+  --muted: oklch(0.27 0.022 205);
+  --muted-foreground: oklch(0.72 0.02 205);
+  --accent: oklch(0.3 0.035 205);
+  --accent-foreground: oklch(0.96 0.008 205);
 
   --destructive: oklch(0.63 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
@@ -106,30 +105,30 @@
 
   --border: oklch(1 0 0 / 9%);
   --input: oklch(1 0 0 / 13%);
-  --ring: oklch(0.72 0.15 345);
+  --ring: oklch(0.68 0.083 200);
 
-  --sidebar: oklch(0.195 0.022 335);
-  --sidebar-foreground: oklch(0.96 0.008 340);
-  --sidebar-accent: oklch(0.27 0.03 340);
-  --sidebar-accent-foreground: oklch(0.96 0.008 340);
+  --sidebar: oklch(0.195 0.022 205);
+  --sidebar-foreground: oklch(0.96 0.008 205);
+  --sidebar-accent: oklch(0.27 0.03 205);
+  --sidebar-accent-foreground: oklch(0.96 0.008 205);
   --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.72 0.15 345);
+  --sidebar-ring: oklch(0.68 0.083 200);
 
-  /* Validados no modo escuro (superfície do card): banda 0.48–0.67 e
-     separação para daltonismo ≥ 8 entre vizinhos. */
-  --chart-1: oklch(0.64 0.16 342);
-  --chart-2: oklch(0.65 0.14 150);
+  /* Validados no modo escuro (superfície do card), mesma ordem: banda 0.48–0.67;
+     verde × âmbar com ΔE 7,6 para daltonismo → a legenda tem rótulo e número. */
+  --chart-1: oklch(0.64 0.11 195);
+  --chart-2: oklch(0.58 0.13 160);
   --chart-3: oklch(0.665 0.14 85);
   --chart-4: oklch(0.58 0.21 22);
-  --chart-5: oklch(0.6 0.12 225);
+  --chart-5: oklch(0.62 0.14 300);
 }
 
-/* Sombras suaves com um toque do tom da marca (sombra cinza pura parece "suja" no fundo quente). */
+/* Sombras suaves com um toque do tom da marca. */
 @theme {
-  --shadow-xs: 0 1px 2px oklch(0.3 0.05 335 / 0.05);
-  --shadow-sm: 0 1px 2px oklch(0.3 0.05 335 / 0.04), 0 2px 10px -2px oklch(0.3 0.05 335 / 0.06);
-  --shadow-md: 0 2px 4px oklch(0.3 0.05 335 / 0.04), 0 8px 24px -6px oklch(0.3 0.05 335 / 0.12);
-  --shadow-lg: 0 4px 8px oklch(0.3 0.05 335 / 0.05), 0 18px 40px -10px oklch(0.3 0.05 335 / 0.18);
+  --shadow-xs: 0 1px 2px oklch(0.3 0.05 205 / 0.05);
+  --shadow-sm: 0 1px 2px oklch(0.3 0.05 205 / 0.04), 0 2px 10px -2px oklch(0.3 0.05 205 / 0.06);
+  --shadow-md: 0 2px 4px oklch(0.3 0.05 205 / 0.04), 0 8px 24px -6px oklch(0.3 0.05 205 / 0.12);
+  --shadow-lg: 0 4px 8px oklch(0.3 0.05 205 / 0.05), 0 18px 40px -10px oklch(0.3 0.05 205 / 0.18);
 }
 
 /* Mapeia os tokens para utilitários do Tailwind (bg-background, text-foreground, etc.) */

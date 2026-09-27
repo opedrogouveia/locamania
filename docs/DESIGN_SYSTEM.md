@@ -11,14 +11,14 @@
 - **Semânticos** (use só estes): `bg-background/card/popover/primary/secondary/muted/accent`,
   `text-foreground/muted-foreground/primary`, `border-border`, `ring-ring`, e os estados
   `success`, `warning`, `destructive`, `info` (+ `-foreground`).
-- **Identidade (27/09/2026)**: orquídea (`--primary` oklch 0.54 0.19 342 ≈ `#b3318d`) sobre neutros
-  levemente quentes (hue 330–340, croma baixo), cantos 14 px (`--radius`), sombras suaves com o tom da
-  marca (`--shadow-*` no `@theme`) e fonte **DM Sans**. Pedido do Pedro: moderno, um pouco feminino,
-  profissional. `--brand`, `--brand-strong` (ameixa) e `--brand-accent` (pêssego) vão no logo, no
-  login e no cartão principal do app. O vermelho de erro fica em hue 27, longe da orquídea, para
-  botão principal e ação destrutiva nunca se confundirem. Trocar a marca = `--primary`, `--ring`,
-  `--accent`, `--chart-1`, `--brand-*`, `app/icon.svg` (+ ícones PNG), `manifest.ts`, e-mail
-  (`message.hbs`) e PDF (`pdf.service.ts`). Paleta de gráficos revalidada (dataviz) com a orquídea.
+- **Identidade (27/09/2026)**: **verde-petróleo** (`--primary` oklch 0.5 0.105 200 ≈ `#00747b`),
+  escolhido pelo Pedro entre 4 opções (o rosa-orquídea foi recusado). Neutros com leve toque do tom
+  (hue ~205), cantos 14 px (`--radius`), sombras suaves (`--shadow-*` no `@theme`), fonte **DM Sans**.
+  `--brand-strong` (petróleo escuro) e `--brand-accent` (pêssego) no logo, login e cartão principal do
+  app. Gráficos: petróleo, violeta, verde, âmbar, vermelho — na barra da frota o petróleo nunca
+  encosta no verde (validado com o dataviz). Trocar a marca = `--primary`, `--ring`, `--accent`,
+  `--chart-1`, `--brand-*`, `app/icon.svg` (+ PNGs), `manifest.ts`, `layout.tsx` (themeColor), e-mail
+  (`message.hbs`) e PDF (`pdf.service.ts`).
 - Nunca `bg-blue-500`, `#hex` ou `slate-*` em tela.
 
 ## 2. Primitivos (`components/ui/`)

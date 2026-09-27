@@ -23,8 +23,8 @@ export const viewport: Viewport = {
   // Deixa o conteúdo ir até a borda no iPhone; as áreas seguras são tratadas no CSS.
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fbf8fa' },
-    { media: '(prefers-color-scheme: dark)', color: '#1a1118' },
+    { media: '(prefers-color-scheme: light)', color: '#f6fbfb' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b1a1c' },
   ],
 };
 

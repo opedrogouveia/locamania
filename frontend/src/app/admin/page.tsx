@@ -219,8 +219,8 @@ export default function DashboardPage() {
               total={fleet.total}
               segments={[
                 { key: 'RENTED', label: 'Alugadas', value: fleet.rented, colorClass: 'bg-chart-1', href: '/admin/motorcycles?status=RENTED' },
-                { key: 'AVAILABLE', label: 'Disponíveis', value: fleet.available, colorClass: 'bg-chart-2', href: '/admin/motorcycles?status=AVAILABLE' },
                 { key: 'RESERVED', label: 'Reservadas', value: fleet.reserved, colorClass: 'bg-chart-5', href: '/admin/motorcycles?status=RESERVED' },
+                { key: 'AVAILABLE', label: 'Disponíveis', value: fleet.available, colorClass: 'bg-chart-2', href: '/admin/motorcycles?status=AVAILABLE' },
                 { key: 'MAINTENANCE', label: 'Em manutenção', value: fleet.maintenance, colorClass: 'bg-chart-3', href: '/admin/motorcycles?status=MAINTENANCE' },
                 { key: 'BLOCKED', label: 'Bloqueadas', value: fleet.blocked, colorClass: 'bg-chart-4', href: '/admin/motorcycles?status=BLOCKED' },
                 { key: 'INACTIVE', label: 'Inativas', value: fleet.inactive, colorClass: 'bg-muted-foreground/40', href: '/admin/motorcycles?status=INACTIVE' },
