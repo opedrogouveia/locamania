@@ -45,3 +45,6 @@ docs/_privado/
 
 # pré-visualização local (NEXT_DIST_DIR)
 .next-preview/
+
+# chaves de deploy (nunca commitar)
+.env.deploy
