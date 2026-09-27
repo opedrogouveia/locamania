@@ -14,7 +14,7 @@
   --radius: 0.875rem;
 
   /* Superfícies */
-  --background: oklch(0.984 0.005 205);
+  --background: oklch(0.985 0.002 205);
   --foreground: oklch(0.22 0.03 205);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.22 0.03 205);
@@ -31,9 +31,9 @@
   --brand-accent: oklch(0.84 0.1 45);
 
   /* Neutros de apoio */
-  --secondary: oklch(0.963 0.01 205);
+  --secondary: oklch(0.965 0.004 205);
   --secondary-foreground: oklch(0.3 0.04 205);
-  --muted: oklch(0.965 0.008 205);
+  --muted: oklch(0.966 0.003 205);
   --muted-foreground: oklch(0.52 0.025 205);
   --accent: oklch(0.955 0.02 200);
   --accent-foreground: oklch(0.32 0.055 200);
@@ -49,16 +49,16 @@
   --info-foreground: oklch(0.99 0 0);
 
   /* Linhas e foco */
-  --border: oklch(0.925 0.01 205);
-  --input: oklch(0.9 0.013 205);
+  --border: oklch(0.925 0.004 205);
+  --input: oklch(0.9 0.005 205);
   --ring: oklch(0.5 0.105 200);
 
   /* Sidebar (superfície dedicada) */
-  --sidebar: oklch(0.994 0.003 205);
+  --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.22 0.03 205);
   --sidebar-accent: oklch(0.96 0.016 200);
   --sidebar-accent-foreground: oklch(0.32 0.055 200);
-  --sidebar-border: oklch(0.93 0.01 205);
+  --sidebar-border: oklch(0.93 0.004 205);
   --sidebar-ring: oklch(0.5 0.105 200);
 
   /* Gráficos (dataviz validate_palette, modo claro no branco). Ordem na barra

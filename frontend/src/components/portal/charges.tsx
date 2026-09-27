@@ -38,19 +38,19 @@ export function NextPaymentHero({ charge, today, className }: { charge: PortalCh
   return (
     <section
       className={cn(
-        'relative overflow-hidden rounded-3xl p-5 shadow-md sm:p-6',
-        // Degradê da marca com texto branco nos dois temas (o primary-foreground do escuro é escuro).
-        overdue ? 'bg-destructive text-destructive-foreground' : 'bg-linear-to-br from-brand to-brand-strong text-white',
+        // Cartão branco com a cor só nos detalhes (pedido do Pedro); em atraso, o vermelho entra no rótulo e no botão.
+        'relative overflow-hidden rounded-3xl border p-5 shadow-md sm:p-6',
+        overdue ? 'border-destructive/30 bg-card' : 'border-border/80 bg-card',
         className,
       )}
       aria-label={overdue ? 'Pagamento em atraso' : 'Próximo pagamento'}
     >
       {/* Círculos decorativos: dão "cara de app" sem imagem. */}
-      <span className="pointer-events-none absolute -right-12 -top-16 size-48 rounded-full bg-current opacity-[0.07]" aria-hidden />
-      <span className="pointer-events-none absolute -bottom-20 right-16 size-40 rounded-full bg-current opacity-[0.05]" aria-hidden />
+      <span className={cn('pointer-events-none absolute -right-12 -top-16 size-48 rounded-full opacity-[0.07]', overdue ? 'bg-destructive' : 'bg-primary')} aria-hidden />
+      <span className={cn('pointer-events-none absolute -bottom-20 right-16 size-40 rounded-full opacity-[0.05]', overdue ? 'bg-destructive' : 'bg-primary')} aria-hidden />
 
       <div className="relative">
-        <p className="flex items-center gap-1.5 text-sm font-medium opacity-90">
+        <p className={cn('flex items-center gap-1.5 text-sm font-semibold', overdue ? 'text-destructive' : 'text-primary')}>
           {overdue ? <CircleAlert className="size-4" aria-hidden /> : <Clock className="size-4" aria-hidden />}
           {overdue ? 'Pagamento em atraso' : 'Próximo pagamento'}
         </p>
@@ -58,9 +58,9 @@ export function NextPaymentHero({ charge, today, className }: { charge: PortalCh
         <p className="mt-2.5 text-[15px] font-medium">
           {dueLine(charge.dueDate, today)}
         </p>
-        <p className="mt-0.5 truncate text-sm opacity-80">{chargeTitle(charge)}</p>
+        <p className="mt-0.5 truncate text-sm text-muted-foreground">{chargeTitle(charge)}</p>
         {overdue && withFees && (
-          <p className="mt-3 rounded-xl bg-current/10 px-3 py-2 text-sm">
+          <p className="mt-3 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
             Valor com multa e juros de {plural(late, 'dia', 'dias')} de atraso. Valor original: {formatBRL(charge.amount)}.
           </p>
         )}
@@ -69,14 +69,14 @@ export function NextPaymentHero({ charge, today, className }: { charge: PortalCh
           size="lg"
           className={cn(
             'mt-5 h-14 w-full rounded-2xl text-base font-bold uppercase tracking-wide shadow-sm [&_svg]:size-5',
-            overdue ? 'bg-card text-destructive hover:bg-card/90' : 'bg-white text-brand-strong hover:bg-white/90',
+            overdue ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : 'bg-primary text-primary-foreground hover:bg-primary/90',
           )}
         >
           <Link href={`/app/payments/${charge.id}`}>
             <QrCode /> Pagar
           </Link>
         </Button>
-        <p className="mt-2.5 text-center text-xs opacity-80">Pelo PIX, confirmado na hora</p>
+        <p className="mt-2.5 text-center text-xs text-muted-foreground">Pelo PIX, confirmado na hora</p>
       </div>
     </section>
   );
