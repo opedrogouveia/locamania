@@ -6,7 +6,7 @@
 
 ## Estado atual (25/09/2026)
 
-**MVP completo e rodando localmente**, com 12 meses de dados de demonstração. Etapas 0–12 do
+**MVP no ar** em https://locamania.vercel.app (API https://locamania-api.onrender.com), com 12 meses de dados de demonstração; atualizações saem a cada `git push` (ver [`DEPLOY.md`](DEPLOY.md) › Situação atual). Etapas 0–12 do
 [`PLANO_MVP.md`](PLANO_MVP.md) concluídas; falta só a entrega (13) — publicar seguindo o
 [`DEPLOY.md`](DEPLOY.md) e revisar com a cliente.
 

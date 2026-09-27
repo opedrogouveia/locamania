@@ -1,0 +1,51 @@
+# Deploy da API a cada push na main — só depois do CI verde.
+#
+# 1. Aplica as migrations novas no Supabase (prisma migrate deploy; idempotente).
+# 2. Manda o Render publicar o commit (o autoDeploy do Render fica desligado, para
+#    a API nunca subir antes das migrations nem com o CI vermelho).
+#
+# O site (Vercel) publica sozinho pela integração com o GitHub.
+#
+# Secrets: DIRECT_URL (Supabase, porta 5432), RENDER_API_KEY, RENDER_SERVICE_ID.
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  api:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --filter @locamania/backend... --filter @locamania/shared
+      - name: Migrations
+        env:
+          DATABASE_URL: ${{ secrets.DIRECT_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        run: pnpm --filter @locamania/backend exec prisma migrate deploy
+      - name: Publicar no Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          curl -fsS -X POST "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+            -d "{\"commitId\": \"$COMMIT\"}" | tee deploy.json

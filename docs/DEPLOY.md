@@ -13,6 +13,28 @@ Celular / PC ──► Vercel (site: painel + app do cliente)
 GitHub Actions ────┘  08:00 rotinas diárias · 03:00 backup do banco
 ```
 
+## Situação atual (no ar desde 27/09/2026)
+
+| Parte | Onde | Endereço |
+|---|---|---|
+| Site (painel + app) | Vercel, projeto `locamania` (conta do Pedro) | https://locamania.vercel.app |
+| API | Render, serviço `locamania-api` (free, Ohio) | https://locamania-api.onrender.com (`/docs`) |
+| Banco | Supabase, projeto `locamania` (ref `bcutsaevncqtvrrezqto`, `ca-central-1`) | usuário próprio do app: `locamania_app` |
+
+- **Dados**: demonstração (12 meses fictícios). Senha das contas de demonstração em produção:
+  `SENHA_DEMO` no `.env.deploy` (não é a `changeme123` do repositório, que é público).
+- **Chaves e segredos**: todos no `.env.deploy` da máquina do Pedro (fora do git). Os do GitHub
+  Actions já estão gravados no repositório.
+- **Atualizar o sistema = `git push` na `main`**:
+  - Site: a Vercel publica sozinha (integração com o GitHub).
+  - API: o workflow **Deploy** roda depois do CI verde, aplica as migrations no Supabase e manda o
+    Render publicar o commit (o autoDeploy do Render fica desligado de propósito).
+- Rotinas diárias (08:00) e backup (03:00) já rodam pelo GitHub Actions.
+- Por que o banco é no Canadá: a chave do Supabase era restrita ao projeto que a conta já tinha
+  (vazio, em `ca-central-1`); ele fica mais perto da API (Ohio) do que São Paulo ficaria.
+- O usuário `postgres` do Supabase não aceita troca de senha pela API: o app usa o papel
+  `locamania_app` (dono das tabelas do schema `public`).
+
 ## 0. Antes de começar
 
 - [ ] Repositório `opedrogouveia/locamania` com o código mais recente em `main`.
