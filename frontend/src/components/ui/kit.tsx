@@ -158,13 +158,13 @@ export function StatCard({
         {hint && <p className="line-clamp-2 text-xs text-muted-foreground">{hint}</p>}
       </div>
       {Icon && (
-        <span className={cn('hidden size-10 shrink-0 items-center justify-center rounded-lg sm:flex', TONES[tone])}>
+        <span className={cn('hidden size-10 shrink-0 items-center justify-center rounded-xl sm:flex', TONES[tone])}>
           <Icon className="size-[18px] sm:size-5" aria-hidden />
         </span>
       )}
     </div>
   );
-  const cls = cn('rounded-xl border border-border bg-card p-4 shadow-sm transition-colors', href && 'hover:border-ring/40 hover:bg-accent/30', className);
+  const cls = cn('rounded-xl border border-border/80 bg-card p-4 shadow-sm transition-all', href && 'hover:-translate-y-px hover:border-ring/30 hover:shadow-md', className);
   return href ? (
     <Link href={href} className={cn(cls, 'block')}>
       {body}

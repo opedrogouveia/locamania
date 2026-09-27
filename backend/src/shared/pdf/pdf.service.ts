@@ -16,10 +16,10 @@ export interface PdfHeader {
 }
 
 const MARGIN = 48;
-const INK = '#111827';
+const INK = '#2a1726';
 const MUTED = '#6b7280';
 const LINE = '#e5e7eb';
-const BRAND = '#1d4ed8';
+const BRAND = '#b3318d';
 
 /**
  * Construtor de PDFs (pdfkit): contrato, recibo e relatórios usam o mesmo

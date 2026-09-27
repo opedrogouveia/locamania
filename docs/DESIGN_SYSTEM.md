@@ -11,10 +11,14 @@
 - **Semânticos** (use só estes): `bg-background/card/popover/primary/secondary/muted/accent`,
   `text-foreground/muted-foreground/primary`, `border-border`, `ring-ring`, e os estados
   `success`, `warning`, `destructive`, `info` (+ `-foreground`).
-- **Marca provisória**: `--brand`, `--brand-strong`, `--brand-accent` (logo, login, destaques do app do
-  cliente). A cor de interface é o azul de `--primary`. Quando a identidade da Locamania chegar,
-  troca-se `--primary`, `--ring`, `--accent`, `--chart-1` e os `--brand-*` — **os neutros continuam
-  cinza** (lição do SafeKeep: marca que invade o fundo pesa).
+- **Identidade (27/09/2026)**: orquídea (`--primary` oklch 0.54 0.19 342 ≈ `#b3318d`) sobre neutros
+  levemente quentes (hue 330–340, croma baixo), cantos 14 px (`--radius`), sombras suaves com o tom da
+  marca (`--shadow-*` no `@theme`) e fonte **DM Sans**. Pedido do Pedro: moderno, um pouco feminino,
+  profissional. `--brand`, `--brand-strong` (ameixa) e `--brand-accent` (pêssego) vão no logo, no
+  login e no cartão principal do app. O vermelho de erro fica em hue 27, longe da orquídea, para
+  botão principal e ação destrutiva nunca se confundirem. Trocar a marca = `--primary`, `--ring`,
+  `--accent`, `--chart-1`, `--brand-*`, `app/icon.svg` (+ ícones PNG), `manifest.ts`, e-mail
+  (`message.hbs`) e PDF (`pdf.service.ts`). Paleta de gráficos revalidada (dataviz) com a orquídea.
 - Nunca `bg-blue-500`, `#hex` ou `slate-*` em tela.
 
 ## 2. Primitivos (`components/ui/`)

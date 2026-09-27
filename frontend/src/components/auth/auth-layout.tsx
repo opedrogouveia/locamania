@@ -16,7 +16,7 @@ const HIGHLIGHTS = [
 export function AuthLayout({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1.05fr_1fr]">
-      <aside className="relative hidden overflow-hidden bg-brand-strong p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <aside className="relative hidden overflow-hidden bg-linear-to-br from-brand-strong via-brand-strong to-brand p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-white/10" />
         <div className="pointer-events-none absolute -bottom-32 -left-16 size-[28rem] rounded-full bg-white/5" />
         <div className="relative flex items-center gap-2.5 text-white">

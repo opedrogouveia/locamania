@@ -39,7 +39,8 @@ export function NextPaymentHero({ charge, today, className }: { charge: PortalCh
     <section
       className={cn(
         'relative overflow-hidden rounded-3xl p-5 shadow-md sm:p-6',
-        overdue ? 'bg-destructive text-destructive-foreground' : 'bg-primary text-primary-foreground',
+        // Degradê da marca com texto branco nos dois temas (o primary-foreground do escuro é escuro).
+        overdue ? 'bg-destructive text-destructive-foreground' : 'bg-linear-to-br from-brand to-brand-strong text-white',
         className,
       )}
       aria-label={overdue ? 'Pagamento em atraso' : 'Próximo pagamento'}
@@ -67,8 +68,8 @@ export function NextPaymentHero({ charge, today, className }: { charge: PortalCh
           asChild
           size="lg"
           className={cn(
-            'mt-5 h-14 w-full rounded-2xl bg-card text-base font-bold uppercase tracking-wide shadow-sm hover:bg-card/90 [&_svg]:size-5',
-            overdue ? 'text-destructive' : 'text-primary',
+            'mt-5 h-14 w-full rounded-2xl text-base font-bold uppercase tracking-wide shadow-sm [&_svg]:size-5',
+            overdue ? 'bg-card text-destructive hover:bg-card/90' : 'bg-white text-brand-strong hover:bg-white/90',
           )}
         >
           <Link href={`/app/payments/${charge.id}`}>

@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { DM_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
 
 import './globals.css';
 import { themeInitScript } from '@/lib/theme/use-theme';
 import { Providers } from './providers';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dm-sans', display: 'swap' });
 
 export const metadata: Metadata = {
   title: { default: 'Locamania', template: '%s · Locamania' },
@@ -23,15 +23,15 @@ export const viewport: Viewport = {
   // Deixa o conteúdo ir até a borda no iPhone; as áreas seguras são tratadas no CSS.
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f7f8fa' },
-    { media: '(prefers-color-scheme: dark)', color: '#12151c' },
+    { media: '(prefers-color-scheme: light)', color: '#fbf8fa' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1118' },
   ],
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     // suppressHydrationWarning no <html>: o script do tema aplica a classe antes do React.
-    <html lang="pt-BR" className={inter.variable} suppressHydrationWarning>
+    <html lang="pt-BR" className={dmSans.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>

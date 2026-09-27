@@ -42,3 +42,6 @@ docs/_privado/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# pré-visualização local (NEXT_DIST_DIR)
+.next-preview/
